@@ -38,7 +38,7 @@ minmaxvall = np.zeros([l,2], dtype = 'int16')
 minmaxtall = np.zeros([l,3], dtype = 'int16')
 # information of the magnitude of PE
 minmaxpeall = np.zeros([l,3], dtype = 'int16')
-# information of the hysteresis of the 
+# information of the hysteresis of the wave
 distvpe = np.zeros([l,3], dtype = 'int16')
 thres = 968
 print(thres)

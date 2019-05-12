@@ -22,7 +22,7 @@ playd = h5py.File(filename1)
 ent = playd['Waveform']
 #answ = pd.read_hdf(filename1, "GroundTruth")
 
-l = min(len(ent),100)
+l = min(len(ent),100000)
 
 print(l)
 ent = ent[0:l]
@@ -37,9 +37,9 @@ minmaxtall = np.zeros([l,3], dtype = 'int16')
 '''
 # information of the magnitude of PE
 minmaxpeall = np.zeros([l,3], dtype = 'int16')
-'''
-# information of the hysteresis of the 
+# information of the hysteresis of the wave
 distvpe = np.zeros([l,3], dtype = 'int16')
+'''
 thres = 968
 print(thres)
 count = 0
@@ -49,9 +49,9 @@ for i in range(l):
     if count == int(l / 100):
         print(int((i+1) / (l / 100)), end='% ')
         count = 0
+    '''
     eid = ent[i]['EventID']
     ch = ent[i]['ChannelID']
-    '''
     pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
     pev = pe['PETime'].values
     _, c = np.unique(pev, return_counts=True)
@@ -76,11 +76,12 @@ for i in range(l):
     w = np.array(wf < thres, dtype=np.int8)
     d = np.diff(w)
     # latter one subtract former one
-    minit = np.where(d >= 1)[0][0]
-    maxit = np.where(d <= -1)[0][-1]
-    minmaxtall[i,0] = minit
-    minmaxtall[i,1] = maxit
-    minmaxtall[i,2] = maxit - minit
+    if d.max() != 0 and d.min() !=0:
+        minit = np.where(d >= 1)[0][0]
+        maxit = np.where(d <= -1)[0][-1]
+        minmaxtall[i,0] = minit
+        minmaxtall[i,1] = maxit
+        minmaxtall[i,2] = maxit - minit
     
     '''
     dist1 = minit - minipe
