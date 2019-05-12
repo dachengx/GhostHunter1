@@ -26,7 +26,6 @@ def write_tfRecord(tfRecordName, h5_path):
     writer = tf.python_io.TFRecordWriter(tfRecordName)
     h5file = h5py.File(h5_path)
     ent = h5file['Waveform']
-    h5file.close()
     answ = pd.read_hdf(h5_path, "GroundTruth")
     lenwf = len(ent[0]['Waveform'])
     l = min(len(ent),1000)
@@ -53,6 +52,7 @@ def write_tfRecord(tfRecordName, h5_path):
         if count == int(l / 100)+1:
             print(int((i+1) / (l / 100)), end='% ')
             count = 0
+    h5file.close()
     writer.close()
     print('Write tfrecord successfully')
 
