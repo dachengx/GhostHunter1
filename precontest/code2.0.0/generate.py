@@ -54,6 +54,7 @@ def write_tfRecord(tfRecordName, h5_path):
             count = 0
     h5file.close()
     writer.close()
+    print()
     print('Write tfrecord successfully')
 
 def read_tfRecord(tfRecord_path):
@@ -62,8 +63,8 @@ def read_tfRecord(tfRecord_path):
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(serialized_example, 
                                        features={
-                                               'waveform': tf.FixedlenFeature([1029], tf.int64), 
-                                               'petime': tf.FixedlenFeature([1029], tf.int64)})
+                                               'waveform': tf.FixedLenFeature([1029], tf.int64), 
+                                               'petime': tf.FixedLenFeature([1029], tf.int64)})
     wf = tf.cast(features['waveform'], tf.float32) * (1./1000)
     pet = tf.cast(features['petime'], tf.uint8)
     return wf, pet
