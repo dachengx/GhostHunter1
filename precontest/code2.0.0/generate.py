@@ -21,7 +21,7 @@ playd = h5py.File(filename1)
 ent = playd['Waveform']
 answ = pd.read_hdf(filename1, "GroundTruth")
 
-l = min(len(ent),100000)
+l = min(len(ent),1000)
 
 print(l)
 ent = ent[0:l]
