@@ -10,19 +10,89 @@ generate tf.records files which can be used by tensorflow
 /Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5 --the file downloaded from crowdAI
 """
 
+import tensorflow as tf
 import numpy as np
 #import matplotlib.pyplot as plt
 import pandas as pd
 import h5py
+import os
 
-filename1 = "/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5"
+h5_file_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5'
+tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train.tfrecords'
+tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test.tfrecords'
+data_path = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata'
 
-playd = h5py.File(filename1)
-ent = playd['Waveform']
-answ = pd.read_hdf(filename1, "GroundTruth")
+def write_tfRecord(tfRecordName, h5_path):
+    writer = tf.python_io.TFRecordWriter(tfRecordName)
+    h5file = h5py.File(h5_path)
+    ent = h5file['Waveform']
+    h5file.close()
+    answ = pd.read_hdf(h5_path, "GroundTruth")
+    lenwf = len(ent[0]['Waveform'])
+    l = min(len(ent),1000)
+    print(l)
+    ent = ent[0:l]
+    answ = answ[0:20*l]
+    count = 0
+    for i in range(l):
+        eid = ent[i]['EventID']
+        ch = ent[i]['ChannelID']
+        pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
+        pev = pe['PETime'].values
+        unipe = np.unique(pev, return_counts=False).tolist()
+        wf = ent[i]['Waveform'].tolist()
+        pet = [0] * lenwf
+        for j in unipe:
+            pet[j] = 1
+        
+        example = tf.train.Example(features = tf.train.Features(feature={
+                'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value=wf)), 
+                'petime': tf.train.Feature(int64_list=tf.train.Int64List(value=pet))}))
+        writer.write(example.SerializeToString())
+        count = count + 1
+        if count == int(l / 100)+1:
+            print(int((i+1) / (l / 100)), end='% ')
+            count = 0
+    writer.close()
+    print('Write tfrecord successfully')
 
-l = min(len(ent),1000)
+def read_tfRecord(tfRecord_path):
+    filename_queue = tf.train.string_input_producer([tfRecord_path])
+    reader = tf.TFRecordReader()
+    _, serialized_example = reader.read(filename_queue)
+    features = tf.parse_single_example(serialized_example, 
+                                       features={
+                                               'waveform': tf.FixedlenFeature([1029], tf.int64), 
+                                               'petime': tf.FixedlenFeature([1029], tf.int64)})
+    wf = tf.cast(features['waveform'], tf.float32) * (1./1000)
+    pet = tf.cast(features['petime'], tf.uint8)
+    return wf, pet
 
-print(l)
-ent = ent[0:l]
-answ = answ[0:20*l]
+def get_tfrecord(num, isTrain=True):
+    if isTrain:
+        tfRecord_path = tfRecord_train
+    else:
+        tfRecord_path = tfRecord_test
+    wf, pet = read_tfRecord(tfRecord_path)
+    wf_batch, pet_batch = tf.train.shuffle_batch([wf, pet], 
+                                                 batch_size = num, 
+                                                 num_threads = 2, 
+                                                 capacity = 1000, 
+                                                 min_after_dequeue = 700)
+    return wf_batch, pet_batch
+
+def generate_tfRecord():
+    isExists = os.path.exists(data_path)
+    if not isExists:
+        os.makedirs(data_path)
+        print('The directory was created successfully')
+    else:
+        print('Directory already exists')
+    write_tfRecord(tfRecord_train, h5_file_path)
+    write_tfRecord(tfRecord_test, h5_file_path)
+
+def main():
+    generate_tfRecord()
+
+if __name__ == '__main__':
+    main()
