@@ -21,13 +21,15 @@ h5_file_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5'
 tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train.tfrecords'
 tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test.tfrecords'
 data_path = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata'
+Length_waveform = 1029
 
 def write_tfRecord(tfRecordName, h5_path):
     writer = tf.python_io.TFRecordWriter(tfRecordName)
     h5file = h5py.File(h5_path)
     ent = h5file['Waveform']
     answ = pd.read_hdf(h5_path, "GroundTruth")
-    lenwf = len(ent[0]['Waveform'])
+    #lenwf = len(ent[0]['Waveform'])
+    lenwf = Length_waveform
     l = min(len(ent),1000)
     print(l)
     ent = ent[0:l]
@@ -64,8 +66,8 @@ def read_tfRecord(tfRecord_path):
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(serialized_example, 
                                        features={
-                                               'waveform': tf.FixedLenFeature([1029], tf.int64), 
-                                               'petime': tf.FixedLenFeature([1029], tf.int64)})
+                                               'waveform': tf.FixedLenFeature([Length_waveform], tf.int64), 
+                                               'petime': tf.FixedLenFeature([Length_waveform], tf.int64)})
     wf = tf.cast(features['waveform'], tf.float32) * (1./1000)
     pet = tf.cast(features['petime'], tf.uint8)
     return wf, pet
