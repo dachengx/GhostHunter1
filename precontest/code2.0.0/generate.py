@@ -30,7 +30,7 @@ def write_tfRecord(tfRecordName, h5_path):
     answ = pd.read_hdf(h5_path, "GroundTruth")
     #lenwf = len(ent[0]['Waveform'])
     lenwf = Length_waveform
-    l = min(len(ent),1000)
+    l = min(len(ent),10000)
     print(l)
     ent = ent[0:l]
     answ = answ[0:20*l]
@@ -58,7 +58,7 @@ def write_tfRecord(tfRecordName, h5_path):
     h5file.close()
     writer.close()
     print()
-    print('Write tfrecord successfully')
+    print('Write tfrecord successfully to ' + tfRecordName)
 
 def read_tfRecord(tfRecord_path):
     filename_queue = tf.train.string_input_producer([tfRecord_path])
