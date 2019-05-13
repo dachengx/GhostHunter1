@@ -24,7 +24,7 @@ def test():
     with tf.Graph().as_default() as g:
         x = tf.placeholder(tf.float32, [None, forward.INPUT_NODE])
         y_ = tf.placeholder(tf.float32, [None, forward.OUTPUT_NODE])
-        y = forward.forward(x, None)
+        y = forward.forwardpro(x, None)
         
         ema = tf.train.ExponentialMovingAverage(backward.MOVING_AVERAGE_DECAY)
         ema_restore = ema.variables_to_restore()

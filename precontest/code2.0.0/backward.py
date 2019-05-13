@@ -24,7 +24,7 @@ REGULARIZER = 0.0001
 STEPS = 50000
 MOVING_AVERAGE_DECAY = 0.99
 MODEL_SAVE_PATH = "./model/"
-MODEL_NAME = "mnist_model"
+MODEL_NAME = "findpe_model"
 train_num_examples = 2000
 
 def backwardpro():

@@ -91,9 +91,17 @@ def generate_tfRecord():
         os.makedirs(data_path)
         print('The directory was created successfully')
     else:
-        print('Directory already exists')
-    write_tfRecord(tfRecord_train, h5_file_path)
-    write_tfRecord(tfRecord_test, h5_file_path)
+        print(data_path + ' Directory already exists')
+    isExists = os.path.exists(tfRecord_train)
+    if not isExists:
+        write_tfRecord(tfRecord_train, h5_file_path)
+    else:
+        print(tfRecord_train + ' already exists')
+    isExists = os.path.exists(tfRecord_test)
+    if not isExists:
+        write_tfRecord(tfRecord_test, h5_file_path)
+    else:
+        print(tfRecord_test + ' already exists')
 
 def main():
     generate_tfRecord()
