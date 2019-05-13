@@ -23,7 +23,7 @@ LEARNING_RATE_DECAY = 0.99
 REGULARIZER = 0.0001
 STEPS = 50000
 MOVING_AVERAGE_DECAY = 0.99
-MODEL_SAVE_PATH = "./model/"
+MODEL_SAVE_PATH = "/Users/xudachengthu/Downloads/GHdataset/model/"
 MODEL_NAME = "findpe_model"
 train_num_examples = 2000
 
@@ -71,7 +71,7 @@ def backwardpro():
             xs, ys = sess.run([wf_batch, pet_batch])
             _, loss_value, step = sess.run([train_op, loss, global_step], 
                                            feed_dict={x: xs, y_: ys})
-            if i % 1000 == 0:
+            if i % 1 == 0:
                 print("After %d training step(s), loss on training batch is %g." % (step, loss_value))
                 saver.save(sess, os.path.join(MODEL_SAVE_PATH, MODEL_NAME), global_step=global_step)
                 
