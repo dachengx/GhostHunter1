@@ -42,7 +42,8 @@ def write_tfRecord(tfRecordName, h5_path):
         wf = ent[i]['Waveform'].tolist()
         pet = [0] * lenwf
         for j in unipe:
-            pet[j] = 1
+            if j <lenwf:
+                pet[j-1] = 1
         
         example = tf.train.Example(features = tf.train.Features(feature={
                 'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value=wf)), 
