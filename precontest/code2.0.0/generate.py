@@ -69,7 +69,7 @@ def read_tfRecord(tfRecord_path):
                                                'waveform': tf.FixedLenFeature([Length_waveform], tf.int64), 
                                                'petime': tf.FixedLenFeature([Length_waveform], tf.int64)})
     wf = tf.cast(features['waveform'], tf.float32) * (1./1000)
-    pet = tf.cast(features['petime'], tf.uint8)
+    pet = tf.cast(features['petime'], tf.float32)
     return wf, pet
 
 def get_tfrecord(num, isTrain=True):
