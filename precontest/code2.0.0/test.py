@@ -18,18 +18,19 @@ import forward
 import backward
 import generate
 TEST_INTERVAL_SECS = 10
-TEST_NUM = 2000
+TEST_NUM = 500
 
 def test():
-    with tf.Graph().as_default() as g:
+    with tf.Graph().as_default():
         x = tf.placeholder(tf.float32, [None, forward.INPUT_NODE])
         y_ = tf.placeholder(tf.float32, [None, forward.OUTPUT_NODE])
         y = forward.forwardpro(x, None)
-        
+        '''
         ema = tf.train.ExponentialMovingAverage(backward.MOVING_AVERAGE_DECAY)
         ema_restore = ema.variables_to_restore()
         saver = tf.train.Saver(ema_restore)
-        
+        '''
+        saver = tf.train.Saver()
         correct_prediction = tf.equal(y_, tf.add(tf.div(tf.sign(tf.subtract(y,0.5)),2),0.5))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         
