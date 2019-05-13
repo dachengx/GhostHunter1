@@ -10,3 +10,6 @@ The data used in generating tfRecord_train and tfRecord_test are the same!
 Pay attention to the 'correct_prediction' and 'loss'
 
 Predict "True" if y[i] > 0.5, otherwise, predict "False"
+
+#### This is the second edit
+
