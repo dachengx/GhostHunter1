@@ -51,11 +51,11 @@ def test():
                     
                     xs, ys = sess.run([wf_batch, pet_batch])
                     
-                    y_predict = sess.run(y, feed_dict={x: xs, y_: ys})
+                    y_predict_value = sess.run(y_predict, feed_dict={x: xs, y_: ys})
                     accuracy_score = sess.run(accuracy, feed_dict={x: xs, y_: ys})
                     
-                    precision = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(y_predict))
-                    recall = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(ys))
+                    precision = np.divide(np.sum(np.multiply(ys, y_predict_value)), np.sum(y_predict_value))
+                    recall = np.divide(np.sum(np.multiply(ys, y_predict_value)), np.sum(ys))
                     print("After %s training step(s), test accuracy = %g" % (global_step, accuracy_score))
                     print("After %s training step(s), test precision = %g" % (global_step, precision))
                     print("After %s training step(s), test recall = %g" % (global_step, recall))

@@ -32,11 +32,13 @@ def get_bias(shape):
 def forwardpro(x, regularizer):
     w1 = get_weight([INPUT_NODE, LAYER1_NODE], regularizer)
     b1 = get_bias([LAYER1_NODE])
-    y1 = tf.nn.relu(tf.matmul(x, w1) + b1)
+    #y1 = tf.nn.relu(tf.matmul(x, w1) + b1)
+    y1 = tf.nn.sigmoid(tf.matmul(x, w1) + b1)
 
     w2 = get_weight([LAYER1_NODE, LAYER2_NODE], regularizer)
     b2 = get_bias([LAYER2_NODE])
-    y2 = tf.nn.relu(tf.matmul(y1, w2) + b2)
+    #y2 = tf.nn.relu(tf.matmul(y1, w2) + b2)
+    y2 = tf.nn.sigmoid(tf.matmul(y1, w2) + b2)
     
     w3 = get_weight([LAYER2_NODE, OUTPUT_NODE], regularizer)
     b3 = get_bias([OUTPUT_NODE])

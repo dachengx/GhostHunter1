@@ -20,12 +20,12 @@ import generate
 BATCH_SIZE = 200
 LEARNING_RATE_BASE = 0.01
 LEARNING_RATE_DECAY = 0.99
-REGULARIZER = 0.000001
-STEPS = 10
+REGULARIZER = 0.00000001
+STEPS = 200
 MOVING_AVERAGE_DECAY = 0.99
 MODEL_SAVE_PATH = "/Users/xudachengthu/Downloads/GHdataset/model/"
 MODEL_NAME = "findpe_model"
-train_num_examples = 2000
+train_num_examples = 10000
 
 def backwardpro():
     with tf.Graph().as_default():
@@ -37,8 +37,10 @@ def backwardpro():
         ce = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y, labels=tf.argmax(y_, 1))
         cem = tf.reduce_mean(ce)
         loss = cem + tf.add_n(tf.get_collection('losses'))
-        '''
+        
         loss = tf.reduce_mean(tf.square(y_ - y)) + tf.add_n(tf.get_collection('losses'))
+        '''
+        loss = tf.reduce_mean(tf.where(y_ == 1, 10 * tf.square(y_ - y), tf.square(y_ - y))) + tf.add_n(tf.get_collection('losses'))
         
         learning_rate = tf.train.exponential_decay(
                 LEARNING_RATE_BASE,

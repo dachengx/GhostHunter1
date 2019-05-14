@@ -17,4 +17,10 @@ Predict "True" if y[i] > 0.5, otherwise, predict "False"
 
 Only use waveform data in [201,600]
 
+#### This is the 4th edit
+
+STILL using tfrecords files from 2.1.1
+
+change relu => sigmoid
+
 Add convolutional method

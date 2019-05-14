@@ -42,9 +42,9 @@ def write_tfRecord(tfRecordName, h5_path):
         pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
         pev = pe['PETime'].values
         unipe = np.unique(pev, return_counts=False)
+        wf = ent[i]['Waveform'].tolist()[200:600]
         # max(unique) is 400, min(unique) is 1
         unipe = np.subtract(unipe[np.where((unipe > 200) & (unipe <= 600))], 200).tolist()
-        wf = ent[i]['Waveform'].tolist()[200:600]
         pet = [0] * lenwf
         for j in unipe:
             if j < lenwf:
