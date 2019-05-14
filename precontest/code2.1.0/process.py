@@ -42,39 +42,39 @@ def restore_model(wf):
                 saver.restore(sess, ckpt.model_checkpoint_path)
                 
                 pf_prob = sess.run(y, feed_dict={x: wf})
-                pf_value = np.where(pf_prob > 0.5)[0] + 1
+                #pf_sign = tf.add(tf.div(tf.sign(tf.subtract(y,0.5)),2),0.5)
+                pf_value = np.where(pf_prob > 0.5)[1] + 1
                 return pf_value
             else:
                 print("No checkpoint file found")
                 return -1
 
-def mmp(wr):
-    opd = [('EventID', '<i8'), ('ChannelID', '<i2'), 
-           ('PETime', 'f4'), ('Weight', 'f4')]
-    pf = restore_model(np.array(wr['Waveform'], dtype=np.float32).reshape([1,1029]) * (1./1000))
-    
-    if not len(pf):
-        pf = np.array([300])
-    rst = np.zeros(len(pf), dtype=opd)
-    rst['PETime'] = pf
-    rst['Weight'] = 1
-    rst['EventID'] = wr['EventID']
-    rst['ChannelID'] = wr['ChannelID']
-    return rst
-
 def process_submit():
+    opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     with h5py.File(fipt) as ipt, h5py.File(fopt, "w") as opt:
-        '''
         ent = ipt['Waveform']
         l = len(ent)
+        print(l)
+        dt = np.zeros(l*20, dtype=opd)
+        #dt = np.zeros(50000, dtype=opd)
+        start = 0
+        end = 0
         count = 0
         for i in range(l):
-            dt = np.concatenate([mmp(ent[i])])
+            wr = ent[i]
+            pf = restore_model(np.array(wr['Waveform'], dtype=np.float32).reshape([1,1029]) * (1./1000))
+            if not len(pf):
+                pf = np.array([300])
+            end = start + len(pf)
+            dt['PETime'][start:end] = pf
+            dt['Weight'][start:end] = 1
+            dt['EventID'][start:end] = wr['EventID']
+            dt['ChannelID'][start:end] = wr['ChannelID']
+            start = end
             if count == int(l / 100)+1:
                 print(int((i+1) / (l / 100)), end='% ')
                 count = 0
-                '''
-        dt = np.concatenate([mmp(wr) for wr in ipt['Waveform']])
+        dt = dt[np.where(dt['EventID'] > 0)]
         opt.create_dataset('Answer', data=dt, compression='gzip')
 
 

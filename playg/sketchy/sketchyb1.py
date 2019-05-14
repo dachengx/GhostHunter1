@@ -37,7 +37,7 @@ minmaxvall = np.zeros([l,2], dtype = 'int16')
 # information of the come and leave time of the wave
 minmaxtall = np.zeros([l,3], dtype = 'int16')
 # information of the magnitude of PE
-minmaxpeall = np.zeros([l,3], dtype = 'int16')
+minmaxpeall = np.zeros([l,4], dtype = 'int16')
 # information of the hysteresis of the wave
 distvpe = np.zeros([l,3], dtype = 'int16')
 thres = 968
@@ -53,12 +53,13 @@ for i in range(l):
     ch = ent[i]['ChannelID']
     pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
     pev = pe['PETime'].values
-    _, c = np.unique(pev, return_counts=True)
+    u, c = np.unique(pev, return_counts=True)
     minipe = np.min(pev)
     maxipe = np.max(pev)
     minmaxpeall[i,0] = minipe
     minmaxpeall[i,1] = maxipe
     minmaxpeall[i,2] = maxipe - minipe
+    minmaxpeall[i,3] = u.size
     unique, counts = np.unique(c,return_counts=True)
     for j in range(len(unique)):
         countall[unique[j]-1,1] = countall[unique[j]-1,1] + counts[j]
@@ -132,18 +133,23 @@ plt.savefig("minvcumu.eps")
 plt.show()
 plt.clf()
 plt.hist(minmaxtall[:,2], 100, density=1, histtype='bar', cumulative=True)
-plt.title('wavelenumu, l='+str(l))
-plt.savefig("wavelenumu.eps")
+plt.title('wavelencumu, l='+str(l))
+plt.savefig("wavelencumu.eps")
 plt.show()
 plt.clf()
 plt.hist(minmaxpeall[:,2], 100, density=1, histtype='bar', cumulative=True)
-plt.title('pelenumu, l='+str(l))
-plt.savefig("pelenumu.eps")
+plt.title('pelencumu, l='+str(l))
+plt.savefig("pelencumu.eps")
+plt.show()
+plt.clf()
+plt.hist(minmaxpeall[:,3], 40, density=1, histtype='bar', cumulative=True)
+plt.title('penumcumu, l='+str(l))
+plt.savefig("penumcumu.eps")
 plt.show()
 plt.clf()
 plt.hist(distlong, 50, density=1, histtype='bar', cumulative=True)
-plt.title('totlenumu, l='+str(l))
-plt.savefig("totlenumu.eps")
+plt.title('totlencumu, l='+str(l))
+plt.savefig("totlencumu.eps")
 plt.show()
 
 playd.close()
