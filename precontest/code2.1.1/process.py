@@ -43,7 +43,7 @@ def restore_model(wf):
                 
                 pf_prob = sess.run(y, feed_dict={x: wf})
                 #pf_sign = tf.add(tf.div(tf.sign(tf.subtract(y,0.5)),2),0.5)
-                pf_value = np.where(pf_prob > 0.5)[1] + 1
+                pf_value = np.where(pf_prob > 0.5)[1] + 1 + 200
                 return pf_value
             else:
                 print("No checkpoint file found")
@@ -55,13 +55,14 @@ def process_submit():
         ent = ipt['Waveform']
         l = len(ent)
         print(l)
+        l = 200
         dt = np.zeros(l*500, dtype=opd)
         start = 0
         end = 0
         count = 0
         for i in range(l):
             wr = ent[i]
-            pf = restore_model(np.array(wr['Waveform'], dtype=np.float32).reshape([1,1029]) * (1./1000))
+            pf = restore_model(np.array(wr['Waveform'], dtype=np.float32)[200:600].reshape([1, 400]) * (1./1000))
             if not len(pf):
                 pf = np.array([300])
             end = start + len(pf)

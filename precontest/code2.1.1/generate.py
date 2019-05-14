@@ -19,10 +19,10 @@ import os
 
 h5_train_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5'
 h5_test_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-1.h5'
-tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.1.0.tfrecords'
-tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.1.0.tfrecords'
+tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.1.1.tfrecords'
+tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.1.1.tfrecords'
 data_path = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata'
-Length_waveform = 1029
+Length_waveform = 400
 
 def write_tfRecord(tfRecordName, h5_path):
     writer = tf.python_io.TFRecordWriter(tfRecordName)
@@ -31,7 +31,7 @@ def write_tfRecord(tfRecordName, h5_path):
     answ = pd.read_hdf(h5_path, "GroundTruth")
     #lenwf = len(ent[0]['Waveform'])
     lenwf = Length_waveform
-    l = min(len(ent),100000)
+    l = min(len(ent),10000)
     print(l)
     ent = ent[0:l]
     answ = answ[0:20*l]
@@ -41,8 +41,10 @@ def write_tfRecord(tfRecordName, h5_path):
         ch = ent[i]['ChannelID']
         pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
         pev = pe['PETime'].values
-        unipe = np.unique(pev, return_counts=False).tolist()
-        wf = ent[i]['Waveform'].tolist()
+        unipe = np.unique(pev, return_counts=False)
+        # max(unique) is 400, min(unique) is 1
+        unipe = np.subtract(unipe[np.where((unipe > 200) & (unipe <= 600))], 200).tolist()
+        wf = ent[i]['Waveform'].tolist()[200:600]
         pet = [0] * lenwf
         for j in unipe:
             if j < lenwf:
