@@ -53,7 +53,7 @@ def write_tfRecord(tfRecordName, h5_path):
                 'petime': tf.train.Feature(int64_list=tf.train.Int64List(value=pet))}))
         writer.write(example.SerializeToString())
         count = count + 1
-        if count == int(l / 100)+1:
+        if count == int(l / 100) + 1:
             print(int((i+1) / (l / 100)), end='% ')
             count = 0
     h5file.close()

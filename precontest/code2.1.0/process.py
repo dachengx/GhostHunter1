@@ -55,8 +55,7 @@ def process_submit():
         ent = ipt['Waveform']
         l = len(ent)
         print(l)
-        dt = np.zeros(l*20, dtype=opd)
-        #dt = np.zeros(50000, dtype=opd)
+        dt = np.zeros(l*500, dtype=opd)
         start = 0
         end = 0
         count = 0
@@ -71,7 +70,8 @@ def process_submit():
             dt['EventID'][start:end] = wr['EventID']
             dt['ChannelID'][start:end] = wr['ChannelID']
             start = end
-            if count == int(l / 100)+1:
+            count = count + 1
+            if count == int(l / 100) + 1:
                 print(int((i+1) / (l / 100)), end='% ')
                 count = 0
         dt = dt[np.where(dt['EventID'] > 0)]
