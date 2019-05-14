@@ -41,7 +41,9 @@ def backwardpro():
         loss = tf.reduce_mean(tf.square(y_ - y)) + tf.add_n(tf.get_collection('losses'))
         '''
         loss = tf.reduce_mean(tf.where(y_ == 1, 10 * tf.square(y_ - y), tf.square(y_ - y))) + tf.add_n(tf.get_collection('losses'))
-        
+        '''
+        loss = tf.reduce_mean(tf.where(y_ == 1, 10 * tf.square(y_ - y), tf.square(y_ - y)))
+        '''
         learning_rate = tf.train.exponential_decay(
                 LEARNING_RATE_BASE,
                 global_step,
