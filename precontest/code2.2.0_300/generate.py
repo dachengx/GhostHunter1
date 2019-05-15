@@ -19,8 +19,8 @@ import os
 
 h5_train_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5'
 h5_test_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-1.h5'
-tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.3.0.tfrecords'
-tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.3.0.tfrecords'
+tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.2.0_300.tfrecords'
+tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.2.0_300.tfrecords'
 data_path = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata'
 #Length_waveform = 400
 Length_waveform = 400

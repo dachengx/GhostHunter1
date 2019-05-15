@@ -50,6 +50,7 @@ def test():
                     y_value = sess.run(y, feed_dict={x: xs})
                     y_c = np.concatenate([[y_value[:, 1]], [y_value[:, 0]]]).transpose()
                     y_predict = np.array(y_value > y_c, dtype=np.uint8)
+                    
                     accuracy_score = np.divide(np.sum(np.multiply(ys, y_predict)), np.array(ys[:, 0]).size)
                     precision = np.divide(np.sum(np.multiply(ys[:, 0], y_predict[:, 0])), np.sum(y_predict[:, 0]))
                     recall = np.divide(np.sum(np.multiply(ys[:, 0], y_predict[:, 0])), np.sum(ys[:,0]))

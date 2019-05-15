@@ -30,3 +30,6 @@ Add convolutional method
 Only train parameters for the 300th waveform position
 
 *DO NOT* change the process.py
+
+#### This is the 6th edit
+ADD convolutional method
