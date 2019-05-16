@@ -33,3 +33,8 @@ Only train parameters for the 300th waveform position
 
 #### This is the 6th edit
 ADD convolutional method
+
+#### This is the 7th edit
+ADD 960 truncation
+
+ADD tops-label method

@@ -22,7 +22,7 @@ BATCH_SIZE = 200
 LEARNING_RATE_BASE = 0.01
 LEARNING_RATE_DECAY = 0.99
 REGULARIZER = 0.00000001
-STEPS = 1
+STEPS = 1000
 MOVING_AVERAGE_DECAY = 0.99
 MODEL_SAVE_PATH = "/Users/xudachengthu/Downloads/GHdataset/model/"
 MODEL_NAME = "findpe_model"
@@ -63,7 +63,7 @@ def backwardpro():
             train_op = tf.no_op(name='train')
         
         saver = tf.train.Saver()
-        wf_batch, pet_batch = generate.get_tfrecord(BATCH_SIZE, isTrain=True)
+        wf_batch, pet_batch, aver_batch = generate.get_tfrecord(BATCH_SIZE, isTrain=True)
         
         with tf.Session() as sess:
             init_op = tf.global_variables_initializer()
@@ -78,6 +78,7 @@ def backwardpro():
             
             for i in range(STEPS):
                 xs, ys = sess.run([wf_batch, pet_batch])
+                #vs = sess.run(aver_batch);
                 reshaped_xs = np.reshape(xs,(BATCH_SIZE, 1, 
                                              generate.Length_waveform, 
                                              forward.NUM_CHANNELS))

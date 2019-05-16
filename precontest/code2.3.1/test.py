@@ -20,6 +20,7 @@ import backward
 import generate
 TEST_INTERVAL_SECS = 10
 TEST_NUM = 500
+REG = np.array([-78.56833501, 128.21711055, -4.16713696])
 
 def test():
     with tf.Graph().as_default():
@@ -33,8 +34,12 @@ def test():
         
         #saver = tf.train.Saver()
         
-        wf_batch, pet_batch = generate.get_tfrecord(TEST_NUM, isTrain=False)
-        
+        wf_batch, pet_batch, aver_batch = generate.get_tfrecord(TEST_NUM, isTrain=False)
+        '''
+        y_predict = tf.add(tf.div(tf.sign(tf.subtract(y,0.5)),2),0.5)
+        correct_prediction = tf.equal(y_, y_predict)
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        '''
         while True:
             with tf.Session() as sess:
                 ckpt = tf.train.get_checkpoint_state(backward.MODEL_SAVE_PATH)
@@ -45,18 +50,28 @@ def test():
                     coord = tf.train.Coordinator()
                     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
                     
-                    xs, ys = sess.run([wf_batch, pet_batch])
+                    xs, ys, vs= sess.run([wf_batch, pet_batch,aver_batch])
                     reshaped_xs = np.reshape(xs,(TEST_NUM, 1, 
                                              generate.Length_waveform, 
                                              forward.NUM_CHANNELS))
                     
                     y_value = sess.run(y, feed_dict={x: reshaped_xs})
-                    y_c = np.concatenate([[y_value[:, 1]], [y_value[:, 0]]]).transpose()
-                    y_predict = np.array(y_value > y_c, dtype=np.uint8)
+                    pe_num = np.around(np.polyval(REG, vs))
+                    y_predict = np.zeros_like(y_value)
+                    for i in range(TEST_NUM):
+                        order_y = np.argsort(y_value[i, :])[::-1]
+                        th_v = y_value[i, :][int(order_y[int(pe_num[i])])]
+                        y_predict[i, :] = np.where(y_value[i,:] > th_v, 1, 0)
                     
-                    accuracy_score = np.divide(np.sum(np.multiply(ys, y_predict)), np.array(ys[:, 0]).size)
-                    precision = np.divide(np.sum(np.multiply(ys[:, 0], y_predict[:, 0])), np.sum(y_predict[:, 0]))
-                    recall = np.divide(np.sum(np.multiply(ys[:, 0], y_predict[:, 0])), np.sum(ys[:,0]))
+                    accuracy_score = np.divide(np.sum(np.multiply(ys, y_predict)), np.array(ys)
+                    precision = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(y_predict))
+                    recall = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(ys))
+                    '''
+                    y_predict_value = sess.run(y_predict, feed_dict={x: reshaped_xs, y_: ys})
+                    accuracy_score = sess.run(accuracy, feed_dict={y_: ys, y_predict: y_predict_value})
+                    precision = np.divide(np.sum(np.multiply(ys, y_predict_value)), np.sum(y_predict_value))
+                    recall = np.divide(np.sum(np.multiply(ys, y_predict_value)), np.sum(ys))
+                    '''
                     print("After %s training step(s), test accuracy = %g" % (global_step, accuracy_score))
                     print("After %s training step(s), test precision = %g" % (global_step, precision))
                     print("After %s training step(s), test recall = %g" % (global_step, recall))

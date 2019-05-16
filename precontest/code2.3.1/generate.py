@@ -19,12 +19,14 @@ import os
 
 h5_train_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5'
 h5_test_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-1.h5'
-tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.3.0.tfrecords'
-tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.3.0.tfrecords'
+tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.3.1.tfrecords'
+tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.3.1.tfrecords'
 data_path = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata'
 #Length_waveform = 400
-Length_waveform = 406
+Length_waveform = 206
 Length_pestate = 2
+THRES = 968
+PLATNUM = 976
 
 def write_tfRecord(tfRecordName, h5_path):
     writer = tf.python_io.TFRecordWriter(tfRecordName)
@@ -44,20 +46,24 @@ def write_tfRecord(tfRecordName, h5_path):
         pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
         pev = pe['PETime'].values
         unipe = np.unique(pev, return_counts=False)
-        wf = ent[i]['Waveform'].tolist()[200:606]
+        wf = ent[i]['Waveform']
+        af = np.where(wf[200:606] <= THRES)
+        if np.size(af) != 0:
+            minit_v = af[0][0]
+            tr = range(minit_v - 10 + 200, minit_v - 10 + Length_waveform + 200)
+            wf_test = wf[tr]
+            pet = [0] * Length_waveform
+            unipe = unipe[(unipe >= tr[0]) & (unipe < tr[-1])] - tr[0]
+            wf_aver = np.mean(np.subtract(PLATNUM, wf_test))/100
+            for j in unipe:
+                pet[j-1] = 1
         
-        # max(unique) is 400, min(unique) is 1
-        # unipe = np.subtract(unipe[np.where((unipe > 200) & (unipe <= 600))], 200).tolist()
-        unipe = unipe.tolist()
-        if 301 in unipe:
-            pet = [1, 0]
-        else:
-            pet = [0, 1]
+            example = tf.train.Example(features = tf.train.Features(feature={
+                'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value=wf_test)), 
+                'petime': tf.train.Feature(int64_list=tf.train.Int64List(value=pet)), 
+                'averwf': tf.train.Feature(float_list=tf.train.FloatList(value=[wf_aver]))}))
+            writer.write(example.SerializeToString())
         
-        example = tf.train.Example(features = tf.train.Features(feature={
-                'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value=wf)), 
-                'petime': tf.train.Feature(int64_list=tf.train.Int64List(value=pet))}))
-        writer.write(example.SerializeToString())
         count = count + 1
         if count == int(l / 100) + 1:
             print(int((i+1) / (l / 100)), end='% ')
@@ -74,23 +80,26 @@ def read_tfRecord(tfRecord_path):
     features = tf.parse_single_example(serialized_example, 
                                        features={
                                                'waveform': tf.FixedLenFeature([Length_waveform], tf.int64), 
-                                               'petime': tf.FixedLenFeature([Length_pestate], tf.int64)})
+                                               'petime': tf.FixedLenFeature([Length_waveform], tf.int64), 
+                                               'averwf': tf.FixedLenFeature([1], tf.float32)})
+    '''!!!'''
     wf = tf.cast(features['waveform'], tf.float32) * (1./1000)
     pet = tf.cast(features['petime'], tf.float32)
-    return wf, pet
+    aver = tf.cast(features['averwf'], tf.float32)
+    return wf, pet, aver
 
 def get_tfrecord(num, isTrain=True):
     if isTrain:
         tfRecord_path = tfRecord_train
     else:
         tfRecord_path = tfRecord_test
-    wf, pet = read_tfRecord(tfRecord_path)
-    wf_batch, pet_batch = tf.train.shuffle_batch([wf, pet], 
+    wf, pet, aver = read_tfRecord(tfRecord_path)
+    wf_batch, pet_batch, aver_batch = tf.train.shuffle_batch([wf, pet, aver], 
                                                  batch_size = num, 
                                                  num_threads = 2, 
                                                  capacity = 1000, 
                                                  min_after_dequeue = 700)
-    return wf_batch, pet_batch
+    return wf_batch, pet_batch, aver_batch
 
 def generate_tfRecord():
     isExists = os.path.exists(data_path)

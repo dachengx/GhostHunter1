@@ -18,11 +18,11 @@ import generate
 WAVEFORM_SIZE = generate.Length_waveform
 NUM_CHANNELS = 1
 CONV1_SIZE = 3
-CONV1_KERNEL_NUM = 32
+CONV1_KERNEL_NUM = 16
 CONV2_SIZE = 3
-CONV2_KERNEL_NUM = 64
+CONV2_KERNEL_NUM = 24
 FC_SIZE = 512
-OUTPUT_NODE = 2
+OUTPUT_NODE = 206
 
 def get_weight(shape, regularizer):
     w = tf.Variable(tf.truncated_normal(shape,stddev=0.1))
