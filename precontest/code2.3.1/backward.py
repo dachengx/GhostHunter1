@@ -36,19 +36,19 @@ def backwardpro():
         y_ = tf.placeholder(tf.float32, [None, forward.OUTPUT_NODE])
         y = forward.forwardpro(x, True, REGULARIZER)
         global_step = tf.Variable(0, trainable=False)
-        
+        '''
         ce = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y, labels=tf.argmax(y_, 1))
         cem = tf.reduce_mean(ce)
         loss = cem + tf.add_n(tf.get_collection('losses'))
-        '''
+        
         loss = tf.reduce_mean(tf.square(y_ - y)) + tf.add_n(tf.get_collection('losses'))
         
         loss = tf.reduce_mean(tf.where(y_ == 1, 10 * tf.square(y_ - y), tf.square(y_ - y))) + tf.add_n(tf.get_collection('losses'))
         
         loss = tf.reduce_mean(tf.where(y_ == 1, 10 * tf.square(y_ - y), tf.square(y_ - y)))
-        
-        loss = tf.reduce_mean(tf.square(y_ - y))
         '''
+        loss = tf.reduce_mean(tf.square(y_ - y))
+        
         learning_rate = tf.train.exponential_decay(
                 LEARNING_RATE_BASE,
                 global_step,
