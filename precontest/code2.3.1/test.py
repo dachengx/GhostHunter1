@@ -63,8 +63,8 @@ def test():
                         th_v = y_value[i, :][int(order_y[int(pe_num[i])])]
                         y_predict[i, :] = np.where(y_value[i,:] > th_v, 1, 0)
                     
-                    accuracy_score = np.divide(np.sum(np.multiply(ys, y_predict)), np.array(ys).size)
-                    precision = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(y_predict).size)
+                    accuracy_score = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(ys))
+                    precision = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(y_predict))
                     recall = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(ys))
                     '''
                     y_predict_value = sess.run(y_predict, feed_dict={x: reshaped_xs, y_: ys})
