@@ -19,7 +19,7 @@ import h5py
 import forward
 import backward
 import generate
-import test
+import testnn
 
 fipt = "/Users/xudachengthu/Downloads/GHdataset/first-problem.h5"
 fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-nn.h5"
@@ -49,13 +49,20 @@ def restore_model(wf_test, wf_aver):
                                              forward.NUM_CHANNELS))
                     
                 y_value = sess.run(y, feed_dict={x: reshaped_xs})
-                #pe_num = np.around(np.polyval(test.REG, wf_aver))
-                pe_num = np.around(np.polyval(test.REG, wf_aver)) * 0.55
+                
+                pe_num = np.around(np.polyval(np.array(testnn.REG_RAW), wf_aver))
                 y_predict = np.zeros_like(y_value)
                 
                 order_y = np.argsort(y_value[0, :])[::-1]
                 th_v = y_value[0, int(order_y[int(pe_num)])]
                 y_predict = np.where(y_value > th_v, 1, 0)
+                
+                #correction of bias
+                if np.size(np.where(y_predict == 1)) != 0:
+                    a = np.where(y_predict == 1)[1][0]
+                    b = np.where(y_predict == 1)[1][-1]
+                    p = int(np.around((2.*b - 3.*a)/5))
+                    y_predict[0, p::] = 0
                 
                 pf_value = np.where(y_predict == 1)[1]
                 return pf_value
@@ -68,6 +75,7 @@ def process_submit():
     with h5py.File(fipt) as ipt, h5py.File(fopt, "w") as opt:
         ent = ipt['Waveform']
         l = len(ent)
+        l = 100
         print(l)
         dt = np.zeros(l*20, dtype=opd)
         start = 0

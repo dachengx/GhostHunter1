@@ -18,9 +18,11 @@ import numpy as np
 import forward
 import backward
 import generate
+
 TEST_INTERVAL_SECS = 10
 TEST_NUM = 500
-REG = np.array([-78.56833501, 128.21711055, -4.16713696])
+REG_RAW = [-78.56833501, 128.21711055, -4.16713696]
+REG = np.array(REG_RAW)
 
 def test():
     with tf.Graph().as_default():
@@ -56,13 +58,20 @@ def test():
                                              forward.NUM_CHANNELS))
                     
                     y_value = sess.run(y, feed_dict={x: reshaped_xs})
-                    #pe_num = np.around(np.polyval(REG, vs))
-                    pe_num = np.around(np.polyval(REG, vs)) * 0.55
+                    
+                    pe_num = np.around(np.polyval(REG, vs))
                     y_predict = np.zeros_like(y_value)
                     for i in range(TEST_NUM):
                         order_y = np.argsort(y_value[i, :])[::-1]
-                        th_v = y_value[i, :][int(order_y[int(pe_num[i])])]
+                        th_v = y_value[i, :][int(order_y[int(np.round((pe_num[i])))])]
                         y_predict[i, :] = np.where(y_value[i,:] > th_v, 1, 0)
+                        
+                        #correction of bias
+                        if np.size(np.where(y_predict[i, :])) != 0:
+                            a = np.where(y_predict[i, :] == 1)[0][0]
+                            b = np.where(y_predict[i, :] == 1)[0][-1]
+                            p = int(np.around((2.*b - 3.*a)/5))
+                            y_predict[i, p::] = 0
                     
                     accuracy_score = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(ys))
                     precision = np.divide(np.sum(np.multiply(ys, y_predict)), np.sum(y_predict))
