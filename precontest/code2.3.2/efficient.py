@@ -26,7 +26,7 @@ fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-nn.h
 '''
 def process_submit():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
-    
+    print(testnn.REG_RAW)
     with tf.Graph().as_default():
         x = tf.placeholder(tf.float32, [1, 1, generate.Length_waveform, forward.NUM_CHANNELS])
         #y_ = tf.placeholder(tf.float32, [None, forward.OUTPUT_NODE])
@@ -72,11 +72,17 @@ def process_submit():
                             
                             y_value = sess.run(y, feed_dict={x: reshaped_xs})
                         
-                            pe_num = np.around(np.polyval(np.array(testnn.REG_RAW), wf_aver))
+                            pe_num = int(np.around(np.polyval(np.array(testnn.REG_RAW), wf_aver)))
+                            if pe_num < 0:
+                                print('oops!', i)
+                                pe_num = 1
+                            if pe_num >= 206:
+                                print('oops!', i)
+                                pe_num = 200
                             y_predict = np.zeros_like(y_value)
                             
                             order_y = np.argsort(y_value[0, :])[::-1]
-                            th_v = y_value[0, int(order_y[int(pe_num)])]
+                            th_v = y_value[0, int(order_y[pe_num])]
                             y_predict = np.where(y_value > th_v, 1, 0)
                             
                             #correction of bias
