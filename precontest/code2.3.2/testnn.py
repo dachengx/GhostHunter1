@@ -21,7 +21,7 @@ import generate
 
 TEST_INTERVAL_SECS = 10
 TEST_NUM = 500
-REG_RAW = [-78.56833501, 128.21711055, -4.16713696]
+REG_RAW = [84.28899, 0]
 REG = np.array(REG_RAW)
 
 def test():

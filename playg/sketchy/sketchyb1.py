@@ -16,7 +16,10 @@ find out the Simple Features of ftraining-0.h5 -- AEWH & AEWT
 find out the Simple Features of ftraining-0.h5 -- MVR
 """
 
-import numpy as np, pandas as pd, matplotlib.pyplot as plt, h5py
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import h5py
 
 filename1 = "/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5"
 
@@ -193,8 +196,9 @@ plt.title('valid corr of wf and pe, l='+str(l))
 plt.savefig("corrwfpe_valid.eps")
 plt.show()
 
-reg = np.polyfit(averwf_valid,penum_valid,2)
-penum_pre = np.polyval(reg,averwf_valid)
+#reg = np.polyfit(averwf_valid, penum_valid, 2)
+reg = np.divide(np.sum(np.multiply(averwf_valid, penum_valid)), np.sum(np.multiply(averwf_valid, averwf_valid)))
+penum_pre = np.polyval([reg, 0], averwf_valid)
 plt.clf()
 plt.scatter(averwf_valid, penum_pre, c='r')
 plt.savefig("corrwfpe_pre.eps")

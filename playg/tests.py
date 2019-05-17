@@ -15,7 +15,7 @@ f = h5py.File(filename1)
 wfl = f['Waveform']
 print(len(wfl))
 
-ent = wfl[0]
+ent = wfl[1]
 f.close()
 w = ent['Waveform']
 print(len(w))

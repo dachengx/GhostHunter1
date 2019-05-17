@@ -24,7 +24,6 @@ tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.
 data_path = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata'
 #Length_waveform = 400
 Length_waveform = 206
-Length_pestate = 2
 THRES = 968
 PLATNUM = 976
 

@@ -59,9 +59,9 @@ def write_tfRecord(tfRecordName, h5_path):
                 pet[j-1] = 1
         
             example = tf.train.Example(features = tf.train.Features(feature={
-                'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value = wf_test)), 
-                'petime': tf.train.Feature(int64_list=tf.train.Int64List(value = pet)), 
-                'averwf': tf.train.Feature(float_list=tf.train.FloatList(value = [wf_aver]))}))
+                'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value=wf_test)), 
+                'petime': tf.train.Feature(int64_list=tf.train.Int64List(value=pet)), 
+                'averwf': tf.train.Feature(float_list=tf.train.FloatList(value=[wf_aver]))}))
             writer.write(example.SerializeToString())
         
         count = count + 1

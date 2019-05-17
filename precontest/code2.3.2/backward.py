@@ -19,10 +19,10 @@ import forward
 import generate
 
 BATCH_SIZE = 200
-LEARNING_RATE_BASE = 0.01
+LEARNING_RATE_BASE = 0.001
 LEARNING_RATE_DECAY = 0.99
-REGULARIZER = 0.00000001
-STEPS = 100
+REGULARIZER = 0.0000001
+STEPS = 50
 MOVING_AVERAGE_DECAY = 0.99
 MODEL_SAVE_PATH = "/Users/xudachengthu/Downloads/GHdataset/model/"
 MODEL_NAME = "findpe_model"
@@ -36,13 +36,13 @@ def backwardpro():
         y_ = tf.placeholder(tf.float32, [None, forward.OUTPUT_NODE])
         y = forward.forwardpro(x, True, REGULARIZER)
         global_step = tf.Variable(0, trainable=False)
-        
+        '''
         ce = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y, labels=tf.argmax(y_, 1))
         cem = tf.reduce_mean(ce)
         loss = cem + tf.add_n(tf.get_collection('losses'))
         '''
         loss = tf.reduce_mean(tf.square(y_ - y)) + tf.add_n(tf.get_collection('losses'))
-        
+        '''
         loss = tf.reduce_mean(tf.where(y_ == 1, 10 * tf.square(y_ - y), tf.square(y_ - y))) + tf.add_n(tf.get_collection('losses'))
         
         loss = tf.reduce_mean(tf.where(y_ == 1, 10 * tf.square(y_ - y), tf.square(y_ - y)))
@@ -77,7 +77,7 @@ def backwardpro():
             threads = tf.train.start_queue_runners(sess=sess, coord=coord)
             
             for i in range(STEPS):
-                xs, ys, _ = sess.run([wf_batch, pet_batch, aver_batch])
+                xs, ys = sess.run([wf_batch, pet_batch])
                 #vs = sess.run(aver_batch);
                 reshaped_xs = np.reshape(xs,(BATCH_SIZE, 1, 
                                              generate.Length_waveform, 

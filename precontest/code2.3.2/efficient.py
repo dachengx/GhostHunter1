@@ -62,9 +62,9 @@ def process_submit():
                             tr = range(minit_v - 10 + 200, minit_v - 10 + generate.Length_waveform + 200)
                             wf_test = wf[tr]
                         
-                        wf_aver = np.mean(np.subtract(generate.PLATNUM, wf_test)) * (1./1000)
+                        wf_aver = np.mean(np.subtract(generate.PLATNUM, wf_test)) * (1./100)
+                        #must be 1./100
                         wf_test = wf_test.reshape([1, generate.Length_waveform]) * (1./1000)
-                        
                         #into the nn
                         reshaped_xs = np.reshape(wf_test, (1, 1, 
                                              generate.Length_waveform, 
