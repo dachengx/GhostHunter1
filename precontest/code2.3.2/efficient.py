@@ -20,10 +20,10 @@ import testnn
 
 fipt = "/Users/xudachengthu/Downloads/GHdataset/first-problem.h5"
 fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-nn-pre.h5"
-
+'''
 fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
 fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-nn.h5"
-
+'''
 def process_submit():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     
@@ -62,8 +62,8 @@ def process_submit():
                             tr = range(minit_v - 10 + 200, minit_v - 10 + generate.Length_waveform + 200)
                             wf_test = wf[tr]
                         
-                        wf_aver = np.mean(np.subtract(generate.PLATNUM, wf_test))/100
-                        wf_test = wf_test.reshape([1, generate.Length_waveform]) * (1./100)
+                        wf_aver = np.mean(np.subtract(generate.PLATNUM, wf_test)) * (1./1000)
+                        wf_test = wf_test.reshape([1, generate.Length_waveform]) * (1./1000)
                         
                         #into the nn
                         reshaped_xs = np.reshape(wf_test, (1, 1, 

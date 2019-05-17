@@ -77,7 +77,7 @@ def backwardpro():
             threads = tf.train.start_queue_runners(sess=sess, coord=coord)
             
             for i in range(STEPS):
-                xs, ys = sess.run([wf_batch, pet_batch])
+                xs, ys, _ = sess.run([wf_batch, pet_batch, aver_batch])
                 #vs = sess.run(aver_batch);
                 reshaped_xs = np.reshape(xs,(BATCH_SIZE, 1, 
                                              generate.Length_waveform, 

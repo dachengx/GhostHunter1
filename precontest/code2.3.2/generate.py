@@ -19,12 +19,12 @@ import os
 
 h5_train_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5'
 h5_test_path = '/Users/xudachengthu/Downloads/GHdataset/ftraining-1.h5'
-tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.3.1.tfrecords'
-tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.3.1.tfrecords'
+tfRecord_train = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_train_2.3.2.tfrecords'
+tfRecord_test = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata/h5_test_2.3.2.tfrecords'
 data_path = '/Users/xudachengthu/Downloads/GHdataset/tfrecorddata'
 #Length_waveform = 400
 Length_waveform = 206
-Length_pestate = 2
+#Length_pestate = 2
 THRES = 968
 PLATNUM = 976
 
@@ -59,9 +59,9 @@ def write_tfRecord(tfRecordName, h5_path):
                 pet[j-1] = 1
         
             example = tf.train.Example(features = tf.train.Features(feature={
-                'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value=wf_test)), 
-                'petime': tf.train.Feature(int64_list=tf.train.Int64List(value=pet)), 
-                'averwf': tf.train.Feature(float_list=tf.train.FloatList(value=[wf_aver]))}))
+                'waveform': tf.train.Feature(int64_list=tf.train.Int64List(value = wf_test)), 
+                'petime': tf.train.Feature(int64_list=tf.train.Int64List(value = pet)), 
+                'averwf': tf.train.Feature(float_list=tf.train.FloatList(value = [wf_aver]))}))
             writer.write(example.SerializeToString())
         
         count = count + 1
