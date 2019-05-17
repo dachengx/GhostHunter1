@@ -43,3 +43,5 @@ ADD tops-label method
 Use more efficient way of process
 
 ONLY add efficeint.py
+
+Using (2*b - 3*a)/5 to cut off bias
