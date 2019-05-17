@@ -61,34 +61,34 @@ def process_submit():
                             minit_v = af[0][0]
                             tr = range(minit_v - 10 + 200, minit_v - 10 + generate.Length_waveform + 200)
                             wf_test = wf[tr]
-                        
-                        wf_aver = np.mean(np.subtract(generate.PLATNUM, wf_test)) * (1./100)
-                        #must be 1./100
-                        wf_test = wf_test.reshape([1, generate.Length_waveform]) * (1./1000)
-                        #into the nn
-                        reshaped_xs = np.reshape(wf_test, (1, 1, 
+                            
+                            wf_aver = np.mean(np.subtract(generate.PLATNUM, wf_test)) * (1./100)
+                            #must be 1./100
+                            wf_test = wf_test.reshape([1, generate.Length_waveform]) * (1./1000)
+                            #into the nn
+                            reshaped_xs = np.reshape(wf_test, (1, 1, 
                                              generate.Length_waveform, 
                                              forward.NUM_CHANNELS))
+                            
+                            y_value = sess.run(y, feed_dict={x: reshaped_xs})
                         
-                        y_value = sess.run(y, feed_dict={x: reshaped_xs})
-                        
-                        pe_num = np.around(np.polyval(np.array(testnn.REG_RAW), wf_aver))
-                        y_predict = np.zeros_like(y_value)
-                        
-                        order_y = np.argsort(y_value[0, :])[::-1]
-                        th_v = y_value[0, int(order_y[int(pe_num)])]
-                        y_predict = np.where(y_value > th_v, 1, 0)
-                        
-                        #correction of bias
-                        if np.size(np.where(y_predict == 1)) != 0:
-                            a = np.where(y_predict == 1)[1][0]
-                            b = np.where(y_predict == 1)[1][-1]
-                            p = int(np.around((2.*b - 3.*a)/5))
-                            y_predict[0, p::] = 0
-                        
-                        pf_value = np.where(y_predict == 1)[1] + minit_v - 10 + 200
-                        pf = pf_value
-                        
+                            pe_num = np.around(np.polyval(np.array(testnn.REG_RAW), wf_aver))
+                            y_predict = np.zeros_like(y_value)
+                            
+                            order_y = np.argsort(y_value[0, :])[::-1]
+                            th_v = y_value[0, int(order_y[int(pe_num)])]
+                            y_predict = np.where(y_value > th_v, 1, 0)
+                            
+                            #correction of bias
+                            if np.size(np.where(y_predict == 1)) != 0:
+                                a = np.where(y_predict == 1)[1][0]
+                                b = np.where(y_predict == 1)[1][-1]
+                                p = int(np.around((2.*b - 3.*a)/5))
+                                y_predict[0, p::] = 0
+                                
+                            pf_value = np.where(y_predict == 1)[1] + minit_v - 10 + 200
+                            pf = pf_value
+                            
                         #out nn
                         if len(pf) == 0 or np.size(af) == 0:
                             pf = np.array([300])
