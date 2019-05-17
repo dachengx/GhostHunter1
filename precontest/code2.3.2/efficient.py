@@ -74,10 +74,10 @@ def process_submit():
                         
                             pe_num = int(np.around(np.polyval(np.array(testnn.REG_RAW), wf_aver)))
                             if pe_num < 0:
-                                print('oops!', i)
+                                print('tiny!', i)
                                 pe_num = 1
                             if pe_num >= 206:
-                                print('oops!', i)
+                                print('huge!', i)
                                 pe_num = 200
                             y_predict = np.zeros_like(y_value)
                             
