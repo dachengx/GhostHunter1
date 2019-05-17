@@ -44,7 +44,7 @@ def restore_model(wf_test, wf_aver):
             if ckpt and ckpt.model_checkpoint_path:
                 saver.restore(sess, ckpt.model_checkpoint_path)
                 
-                reshaped_xs = np.reshape(wf_test,(1, 1, 
+                reshaped_xs = np.reshape(wf_test, (1, 1, 
                                              generate.Length_waveform, 
                                              forward.NUM_CHANNELS))
                     
