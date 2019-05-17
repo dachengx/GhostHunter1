@@ -54,7 +54,7 @@ def write_tfRecord(tfRecordName, h5_path):
             wf_test = wf[tr]
             pet = [0] * Length_waveform
             unipe = unipe[(unipe >= tr[0]) & (unipe < tr[-1])] - tr[0]
-            wf_aver = np.mean(np.subtract(PLATNUM, wf_test))/100
+            wf_aver = np.mean(np.subtract(PLATNUM, wf_test)) * (1./100)
             for j in unipe:
                 pet[j-1] = 1
         

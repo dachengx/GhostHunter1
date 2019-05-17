@@ -10,7 +10,7 @@ Created on Tue Apr 30 18:10:37 2019
 
 import h5py
 filename1 = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
-filename2 = "/Users/xudachengthu/Downloads/GHdataset/playground/submission-example.h5"
+filename2 = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-nn.h5"
 f = h5py.File(filename1)
 wfl = f['Waveform']
 print(len(wfl))

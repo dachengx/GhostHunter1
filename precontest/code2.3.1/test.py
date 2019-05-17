@@ -56,7 +56,8 @@ def test():
                                              forward.NUM_CHANNELS))
                     
                     y_value = sess.run(y, feed_dict={x: reshaped_xs})
-                    pe_num = np.around(np.polyval(REG, vs))
+                    #pe_num = np.around(np.polyval(REG, vs))
+                    pe_num = np.around(np.polyval(REG, vs)) * 0.55
                     y_predict = np.zeros_like(y_value)
                     for i in range(TEST_NUM):
                         order_y = np.argsort(y_value[i, :])[::-1]
