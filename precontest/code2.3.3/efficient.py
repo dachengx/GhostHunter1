@@ -28,10 +28,10 @@ fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-nn.h
 '''
 fipt = "/home/xudacheng/GHdataset/first-problem.h5"
 fopt = "/home/xudacheng/GHdataset/submission/first-submission-nn-pre.h5"
-'''
+
 fipt = "/home/xudacheng/GHdataset/playground/playground-data.h5"
 fopt = "/home/xudacheng/GHdataset/playground/first-submission-nn.h5"
-
+'''
 def process_submit():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     print(testnn.REG_RAW)
@@ -83,8 +83,9 @@ def process_submit():
                             
                             y_value = sess.run(y, feed_dict={x: reshaped_xs})
                             
-                        '''
+                            
                             pe_num = int(np.around(np.polyval(np.array(testnn.REG_RAW), wf_aver)))
+                            '''
                             if pe_num < 0:
                                 print('tiny!', i)
                                 pe_num = 1
@@ -112,15 +113,17 @@ def process_submit():
                             pf = np.array([300])
                         
                         '''
-                        pf = y_value
-                        
-                        end = start + 1029
+                        pf = np.where(y_value > 0, y_value, 0)
+                        pfw = pf[np.where(pf > 0)]
+                        pfw = np.multiply(pfw, np.divide(pe_num, np.sum(pfw)))
+                        pf = np.where(pf > 0)[1] + minit_v - 10 + 200
+                        end = start + len(pf)
                         '''
                         dt['PETime'][start:end] = pf
                         dt['Weight'][start:end] = 1
                         '''
-                        dt['PETime'][start:end] = list(range(1, 1030))
-                        dt['Weight'][start:end] = pf
+                        dt['PETime'][start:end] = pf
+                        dt['Weight'][start:end] = pfw
                         dt['EventID'][start:end] = ent[i]['EventID']
                         dt['ChannelID'][start:end] = ent[i]['ChannelID']
                         start = end
