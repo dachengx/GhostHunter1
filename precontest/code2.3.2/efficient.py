@@ -107,7 +107,7 @@ def process_submit():
                         start = end
                         count = count + 1
                         if count == int(l / 100) + 1:
-                            print(int((i+1) / (l / 100)), end='% ')
+                            print(int((i+1) / (l / 100)), end='% ', flush=True)
                             count = 0
                     
                     dt = dt[np.where(dt['EventID'] > 0)]

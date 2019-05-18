@@ -53,7 +53,7 @@ for i in range(l):
     #print(i)
     count = count + 1
     if count == int(l / 100):
-        print(int((i+1) / (l / 100)), end='% ')
+        print(int((i+1) / (l / 100)), end='% ', flush=True)
         count = 0
     eid = ent[i]['EventID']
     ch = ent[i]['ChannelID']

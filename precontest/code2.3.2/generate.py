@@ -35,7 +35,7 @@ def write_tfRecord(tfRecordName, h5_path):
     answ = pd.read_hdf(h5_path, "GroundTruth")
     #lenwf = len(ent[0]['Waveform'])
     #lenwf = Length_waveform
-    l = min(len(ent),10000)
+    l = min(len(ent),100000)
     print(l)
     ent = ent[0:l]
     answ = answ[0:20*l]

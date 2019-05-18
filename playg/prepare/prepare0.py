@@ -17,7 +17,7 @@ f = h5py.File(filename)
 wfl = f['Waveform']
 print(len(wfl))
 
-ent = wfl[6567]
+ent = wfl[567]
 f.close()
 w = ent['Waveform']
 print(len(w))
@@ -50,3 +50,4 @@ print(pt)
 plt.vlines(pt, ymin=930, ymax=970)
 plt.title("Waveform with Labels")
 plt.show()
+print()
