@@ -12,3 +12,5 @@ PARAMETERS:
 #### This is the second edit
 
 * Using machine learning training
+* Using ordering method
+* Not using 'Find peak' method
