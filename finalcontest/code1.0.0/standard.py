@@ -28,7 +28,7 @@ def generate_standard():
     
     ent = ztrfile['Waveform']
     answ = pd.read_hdf(h5_path, "GroundTruth")
-    l = min(len(ent), 500000)
+    l = min(len(ent), 1000)
     print(l)
     ent = ent[0:l]
     answ = answ[0:20*l]
@@ -63,11 +63,23 @@ def generate_standard():
     plt.xlim(0,120)
     plt.ylim(930, 980)
     tr = list(range(0, 120))
-    plt.plot(tr, np.mean(dt['speWf'], axis = 0))
+    spemean = np.mean(dt['speWf'], axis = 0)
+    plt.plot(tr, spemean)
     plt.vlines([20], ymin=945, ymax=975)
     plt.xlabel('ns')
     plt.ylabel('mV')
     plt.savefig('spemean.eps')
+    plt.show()
+    
+    spemin = np.min(dt['speWf'],axis = 1)
+    plt.clf()
+    plt.hist(spemin, 50, density=1, histtype='bar', cumulative=True)
+    plt.savefig('specumu.eps')
+    plt.show()
+    
+    plt.clf()
+    plt.hist(spemin, 50, density=1, histtype='bar', cumulative=False)
+    plt.savefig('speshow.eps')
     plt.show()
     
     spp = h5py.File(single_pe_path, "w")
