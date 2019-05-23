@@ -24,7 +24,7 @@ def generate_eff():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     model = generate_model(standard.single_pe_path)
     
-    #model = np.add(model, 1)
+    #model = np.add(model, 0.01)
     
     mtray = np.concatenate((np.zeros(400), model[0:50], np.zeros(350)))
     
@@ -46,7 +46,7 @@ def generate_eff():
         count = 0
         for i in range(l):
             wf = ent[i]['Waveform']
-            pf = np.matmul(wf[200:600], invl)
+            pf = np.matmul(np.subtract(np.mean(wf[900:1000]), wf[200:600]), invl)
             
             end = start + len(pf)
             dt['PETime'][start:end] = pf
