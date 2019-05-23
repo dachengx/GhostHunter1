@@ -5,4 +5,6 @@ PARAMETERS:
 
 * Find only one universal wave
 * Not include channel difference
+* Calculate the base line of every single wavefrm to get ride of the statistics fluctuation
 * Only use 0 or 1 weight, because the parameters in tensorflow can not be integral, so it is needed to find a line which indicates the exsitence of the PE
+* Calculate the source data when generating the standard waveform, so that we can measure the degree of disperision

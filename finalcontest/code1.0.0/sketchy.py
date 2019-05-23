@@ -13,9 +13,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import h5py
 import os
+import time
 
-h5_path = '/home/duncan/Downloads/GHdataset/ftraining-0.h5'
-
+h5_path = '/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/ztraining-0.h5'
+'''
+h5_path = '/home/xudacheng/Downloads/GHdataset/finalcontest_data/ztraining-0.h5'
+'''
 def show_onepe():
     h5file = h5py.File(h5_path)
     ent = h5file['Waveform']
@@ -63,7 +66,10 @@ def gene_onepe():
         show_onepe()
 
 def main():
+    start_t = time.time()
     gene_onepe()
+    end_t = time.time()
+    print(end_t - start_t)
 
 if __name__ == '__main__':
     main()
