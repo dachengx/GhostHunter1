@@ -9,6 +9,8 @@ generate standard waveform and disperision of 'single incident pe - waveform'
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 import h5py
@@ -39,17 +41,21 @@ def generate_standard():
         eid = ent[i]['EventID']
         ch = ent[i]['ChannelID']
         pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
+        #pe = answ[eid*300 : eid*500].query("EventID=={} & ChannelID=={}".format(eid, ch))
         pev = pe['PETime'].values
         unipe, c = np.unique(pev, return_counts=True)
         
         if np.size(unipe) == 1 and c[0] == 1:
-            wf = ent[i]['Waveform']
-            dt['EventID'][num] = eid
-            dt['ChannelID'][num] = ch
-            dt['Waveform'][num] = wf
-            dt['speWf'][num] = wf[unipe[0] - 1 - 20 : unipe[0] - 1 + 100]
-            # The 21th position is the pe incoming time
-            num = num + 1
+            if unipe[0] < 21:
+                print('opps!' + str(i))
+            else:
+                wf = ent[i]['Waveform']
+                dt['speWf'][num] = wf[unipe[0] - 1 - 20 : unipe[0] - 1 + 100]
+                dt['EventID'][num] = eid
+                dt['ChannelID'][num] = ch
+                dt['Waveform'][num] = wf
+                # The 21th position is the pe incoming time
+                num = num + 1
             
         count = count + 1
         if count == int(l / 100) + 1:
@@ -59,31 +65,31 @@ def generate_standard():
     print(num)
     dt = dt[np.where(dt['EventID'] > 0)]
     
+    spemean = np.mean(dt['speWf'], axis = 0)
     plt.clf()
     plt.xlim(0,120)
     plt.ylim(930, 980)
     tr = list(range(0, 120))
-    spemean = np.mean(dt['speWf'], axis = 0)
     plt.plot(tr, spemean)
     plt.vlines([20], ymin=945, ymax=975)
     plt.xlabel('ns')
     plt.ylabel('mV')
     plt.savefig('spemean.eps')
-    plt.show()
+    #plt.show()
     
     spemin = np.min(dt['speWf'],axis = 1)
     plt.clf()
     plt.hist(spemin, 50, density=1, histtype='bar', cumulative=True)
     plt.savefig('specumu.eps')
-    plt.show()
+    #plt.show()
     
     plt.clf()
     plt.hist(spemin, 50, density=1, histtype='bar', cumulative=False)
     plt.savefig('speshow.eps')
-    plt.show()
+    #plt.show()
     
     spp = h5py.File(single_pe_path, "w")
-    spp.create_dataset('Answer', data=dt, compression='gzip')
+    spp.create_dataset('Sketchy', data=dt, compression='gzip')
 
 def main():
     start_t = time.time()
