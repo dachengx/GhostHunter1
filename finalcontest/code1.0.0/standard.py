@@ -46,7 +46,7 @@ def generate_standard():
         unipe, c = np.unique(pev, return_counts=True)
         
         if np.size(unipe) == 1 and c[0] == 1:
-            if unipe[0] < 21:
+            if unipe[0] < 21 or unipe[0] > 930:
                 print('opps!' + str(i))
             else:
                 wf = ent[i]['Waveform']

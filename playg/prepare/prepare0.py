@@ -12,12 +12,12 @@ show the data
 """
 
 import h5py
-filename = "/Users/xudachengthu/Downloads/GHdataset/ftraining-0.h5"
+filename = "/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/ztraining-0.h5"
 f = h5py.File(filename)
 wfl = f['Waveform']
 print(len(wfl))
 
-ent = wfl[567]
+ent = wfl[68824]
 f.close()
 w = ent['Waveform']
 print(len(w))
