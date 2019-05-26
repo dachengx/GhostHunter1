@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 23 19:47:03 2019
+Created on Sat May 25 18:56:22 2019
 
 @author: xudachengthu
 
-Using "single PE' method the generate the answer
+To correct the mistake I made in May 25
 """
 
 import numpy as np
@@ -15,23 +15,13 @@ import time
 import standard
 import matplotlib.pyplot as plt
 
-fipt = "/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/ztraining-0.h5"
-fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
-
-
 fipt = "/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/zincm-problem.h5"
-fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
-'''
-fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
-fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-spe.h5"
-'''
-'''
-fipt = "/home/xudacheng/Downloads/GHdataset/finalcontest_data/zincm-problem.h5"
-fopt = "/home/xudacheng/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
+fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-fin_0525-limb.h5"
 
-fipt = "/home/xudacheng/Downloads/GHdataset/playground/playground-data.h5"
-fopt = "/home/xudacheng/Downloads/GHdataset/playground/first-submission-spe.h5"
-'''
+body = "/Users/xudachengthu/Desktop/first-submission-spe-fin_0525.h5"
+
+#body = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-spe_24-2.h5"
+
 LEARNING_RATE = 0.005
 STEPS = 5000
 Length_pe = 200
@@ -39,9 +29,10 @@ THRES = 968
 PLATNUM = 976
 #NORMAL_P = 30
 BATCH_SIZE = 100
+BATCH_SIZE = 30
 GRAIN = 0.05
 
-def generate_eff():
+def generate_limb():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     model = generate_model(standard.single_pe_path)
     
@@ -51,13 +42,14 @@ def generate_eff():
     #invl = np.linalg.inv(loperator)
     with h5py.File(fipt) as ipt, h5py.File(fopt, "w") as opt:
         ent = ipt['Waveform']
+        ent = ent[0 : 30]
         l = len(ent)
         #l = 70
         print(l)
         dt = np.zeros(l*200, dtype=opd)
         start = 0
         end = 0
-        count = 0
+        #count = 0
         
         with tf.Graph().as_default():
             y_ = tf.placeholder(tf.float32, shape=(BATCH_SIZE, Length_pe + 50))
@@ -133,15 +125,20 @@ def generate_eff():
                     dt['EventID'][start:end] = eid_out[j]
                     dt['ChannelID'][start:end] = chid_out[j]
                     start = end
-                    
+                    '''
                 count = count + 1
                 if count == int(chunk / 100) + 1:
                     print(int((i+1) / (chunk / 100)), end = '% ', flush=True)
                     count = 0
-                
-        #dt = dt[np.where(dt['EventID'] > 0)]
+                '''
         dt = dt[np.where(dt['Weight'] > 0)]
+        
+        bipt = h5py.File(body)['Answer']
+        
+        dt = np.concatenate([dt, bipt])
+        
         opt.create_dataset('Answer', data = dt, compression='gzip')
+        
         print(fopt, end = ' ', flush=True)
 
 def generate_model(spe_path):
@@ -158,7 +155,7 @@ def generate_model(spe_path):
 
 def main():
     start_t = time.time()
-    generate_eff()
+    generate_limb()
     end_t = time.time()
     print(end_t - start_t)
 

@@ -15,20 +15,10 @@ import time
 import standard
 import matplotlib.pyplot as plt
 
-fipt = "/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/ztraining-0.h5"
-fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
-
-
-fipt = "/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/zincm-problem.h5"
-fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
-'''
 fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
 fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-spe.h5"
-'''
-'''
-fipt = "/home/xudacheng/Downloads/GHdataset/finalcontest_data/zincm-problem.h5"
-fopt = "/home/xudacheng/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
 
+'''
 fipt = "/home/xudacheng/Downloads/GHdataset/playground/playground-data.h5"
 fopt = "/home/xudacheng/Downloads/GHdataset/playground/first-submission-spe.h5"
 '''
@@ -139,7 +129,6 @@ def generate_eff():
                     print(int((i+1) / (chunk / 100)), end = '% ', flush=True)
                     count = 0
                 
-        #dt = dt[np.where(dt['EventID'] > 0)]
         dt = dt[np.where(dt['Weight'] > 0)]
         opt.create_dataset('Answer', data = dt, compression='gzip')
         print(fopt, end = ' ', flush=True)

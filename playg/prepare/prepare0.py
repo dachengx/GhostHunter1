@@ -31,12 +31,19 @@ plt.ylabel('mV')
 plt.show()
 
 plt.clf()
+plt.plot(w)
+plt.title("Waveform")
+plt.xlabel('ns')
+plt.ylabel('mV')
+plt.show()
+
+plt.clf()
 tr = range(250,400)
-plt.plot(tr,w[tr])
+plt.plot(tr, w[tr])
 plt.title('Waveform Zoomed')
 plt.xlabel('ns')
 plt.ylabel('mV')
-
+'''
 import pandas as pd
 eid = ent['EventID']
 ch = ent['ChannelID']
@@ -49,5 +56,6 @@ print(pt)
 
 plt.vlines(pt, ymin=930, ymax=970)
 plt.title("Waveform with Labels")
+'''
 plt.show()
 print()

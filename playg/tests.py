@@ -11,11 +11,11 @@ Created on Tue Apr 30 18:10:37 2019
 import h5py
 filename1 = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
 filename2 = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-nn.h5"
-f = h5py.File(filename1)
+f = h5py.File(filename1, 'r')
 wfl = f['Waveform']
 print(len(wfl))
 
-ent = wfl[4291]
+ent = wfl[0]
 f.close()
 w = ent['Waveform']
 print(len(w))
@@ -34,7 +34,7 @@ plt.plot(tr,w[tr])
 plt.title('Waveform Zoomed')
 plt.xlabel('ns')
 plt.ylabel('mV')
-
+'''
 import pandas as pd
 eid = ent['EventID']
 ch = ent['ChannelID']
@@ -47,6 +47,7 @@ print(pt)
 
 plt.vlines(pt, ymin=930, ymax=970)
 plt.title("Waveform with Labels")
+'''
 plt.show()
 
 print()

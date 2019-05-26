@@ -20,3 +20,7 @@ PARAMETERS:
 
 #### This is the 4th edit
 * Using batch method tho traing the parameters
+
+#### This is the 5th edit
+* Find the mode of random signal
+* Find the most optimized conbination of STEPS Length_pe PLATNUM THRES BATCH_SIZE & GRAIN
