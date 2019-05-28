@@ -16,22 +16,24 @@ import standard
 import matplotlib.pyplot as plt
 
 fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
-fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-spe.h5"
+fopt_prefix = "/Users/xudachengthu/Downloads/GHdataset/playground/"
 
 '''
 fipt = "/home/xudacheng/Downloads/GHdataset/playground/playground-data.h5"
-fopt = "/home/xudacheng/Downloads/GHdataset/playground/first-submission-spe.h5"
+fopt_prefix = "/home/xudacheng/Downloads/GHdataset/playground/"
 '''
 LEARNING_RATE = 0.005
-STEPS = 5000
+#STEPS = 5000
+STEPS = [3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000]
 Length_pe = 200
 THRES = 968
 PLATNUM = 976
 #NORMAL_P = 30
 BATCH_SIZE = 100
-GRAIN = 0.05
+#GRAIN = 0.05
+GRAIN = [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
 
-def generate_eff():
+def generate_eff_test(grain, steps, fopt):
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     model = generate_model(standard.single_pe_path)
     
@@ -44,10 +46,10 @@ def generate_eff():
         l = len(ent)
         #l = 70
         print(l)
-        dt = np.zeros(l*200, dtype=opd)
+        dt = np.zeros(l*Length_pe, dtype=opd)
         start = 0
         end = 0
-        count = 0
+        #ount = 0
         
         with tf.Graph().as_default():
             y_ = tf.placeholder(tf.float32, shape=(BATCH_SIZE, Length_pe + 50))
@@ -94,14 +96,14 @@ def generate_eff():
                     init_op = tf.global_variables_initializer()
                     sess.run(init_op)
                     
-                    for k in range(STEPS):
+                    for k in range(steps):
                         _, loss_value, w_val, wsq_val, L = sess.run([train_step, loss, w, wsq, LO], feed_dict = {LO : loperator, y_ : wf_input})
                         '''
                         if k % 100 == 0:
                             print("After %d training step(s), loss on training batch is %g." % (k, loss_value))
                 '''
                 for j in range(size_out):
-                    pf = np.multiply(np.around(np.divide(wsq_val[j, :], GRAIN)), GRAIN)
+                    pf = np.multiply(np.around(np.divide(wsq_val[j, :], grain)), grain)
                     '''
                     plt.clf()
                     plt.plot(np.matmul(pf, loperator))
@@ -123,12 +125,12 @@ def generate_eff():
                     dt['EventID'][start:end] = eid_out[j]
                     dt['ChannelID'][start:end] = chid_out[j]
                     start = end
-                    
+                    '''
                 count = count + 1
                 if count == int(chunk / 100) + 1:
                     print(int((i+1) / (chunk / 100)), end = '% ', flush=True)
                     count = 0
-                
+                '''
         dt = dt[np.where(dt['Weight'] > 0)]
         opt.create_dataset('Answer', data = dt, compression='gzip')
         print(fopt, end = ' ', flush=True)
@@ -146,10 +148,13 @@ def generate_model(spe_path):
     return stdmodel
 
 def main():
-    start_t = time.time()
-    generate_eff()
-    end_t = time.time()
-    print(end_t - start_t)
+    for i in range(len(GRAIN)):
+        for j in range(len(STEPS)):
+            fopt = fopt_prefix + str(i) + '-' + str(j) + '.h5'
+            start_t = time.time()
+            generate_eff_test(GRAIN[i], STEPS[j], fopt)
+            end_t = time.time()
+            print('Time for ' + str(GRAIN[i]) + ' ' + str(STEPS[j]) + ' is ' + str(end_t - start_t))
 
 if __name__ == '__main__':
     main()
