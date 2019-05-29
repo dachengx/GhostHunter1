@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 23 19:47:03 2019
+Created on Wed May 29 21:53:05 2019
 
 @author: xudachengthu
 
-Test the performanca of different parameters -- 1
+Test the performanca of different parameters -- 2
 """
 
 import numpy as np
@@ -24,17 +24,15 @@ fopt_prefix = "/home/xudacheng/Downloads/GHdataset/playground/"
 '''
 LEARNING_RATE = 0.005
 #STEPS = 5000
-#STEPS = [3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000]
-STEPS = [10000, 11000, 12000, 13000, 15000, 20000]
+STEPS = 10000
 Length_pe = 200
 THRES = 968
 BATCH_SIZE = 100
 #GRAIN = 0.05
-#GRAIN = [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
 
-GRAIN = [0.1, 0.2, 0.3, 0.5]
+KNIFE = [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
 
-def generate_eff_test(grain, steps, fopt):
+def generate_eff_test(knife, steps, fopt):
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     model = generate_model(standard.single_pe_path)
     
@@ -45,7 +43,7 @@ def generate_eff_test(grain, steps, fopt):
     with h5py.File(fipt) as ipt, h5py.File(fopt, "w") as opt:
         ent = ipt['Waveform']
         l = len(ent)
-        #l = 70
+        l = 70
         print(l)
         dt = np.zeros(l*Length_pe, dtype=opd)
         start = 0
@@ -104,7 +102,12 @@ def generate_eff_test(grain, steps, fopt):
                             print("After %d training step(s), loss on training batch is %g." % (k, loss_value))
                 '''
                 for j in range(size_out):
+                    '''
                     pf = np.multiply(np.around(np.divide(wsq_val[j, :], grain)), grain)
+                    '''
+                    pf = wsq_val[j, :]
+                    pf = pf[np.where(pf > knife)]
+                    
                     '''
                     plt.clf()
                     plt.plot(np.matmul(pf, loperator))
@@ -149,13 +152,13 @@ def generate_model(spe_path):
     return stdmodel
 
 def main():
-    for i in range(len(GRAIN)):
+    for i in range(len(KNIFE)):
         for j in range(len(STEPS)):
             fopt = fopt_prefix + str(i) + '-' + str(j) + '.h5'
             start_t = time.time()
-            generate_eff_test(GRAIN[i], STEPS[j], fopt)
+            generate_eff_test(KNIFE[i], STEPS[j], fopt)
             end_t = time.time()
-            print('Time for ' + str(GRAIN[i]) + ' ' + str(STEPS[j]) + ' is ' + str(end_t - start_t))
+            print('Time for ' + str(KNIFE[i]) + ' ' + str(STEPS[j]) + ' is ' + str(end_t - start_t))
 
 if __name__ == '__main__':
     main()
