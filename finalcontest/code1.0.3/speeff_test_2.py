@@ -24,7 +24,7 @@ fopt_prefix = "/home/xudacheng/Downloads/GHdataset/playground/"
 '''
 LEARNING_RATE = 0.005
 #STEPS = 5000
-STEPS = 10000
+STEPS = [10000]
 Length_pe = 200
 THRES = 968
 BATCH_SIZE = 100
@@ -154,7 +154,7 @@ def generate_model(spe_path):
 def main():
     for i in range(len(KNIFE)):
         for j in range(len(STEPS)):
-            fopt = fopt_prefix + str(i) + '-' + str(j) + '.h5'
+            fopt = fopt_prefix + 'k' + str(i) + '-' + str(j) + '.h5'
             start_t = time.time()
             generate_eff_test(KNIFE[i], STEPS[j], fopt)
             end_t = time.time()
