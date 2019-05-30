@@ -26,7 +26,7 @@ TEST_LEN = 50
 def find_mode():
     f = h5py.File(filename)
     ent = f['Waveform']
-    l = min(len(ent), 50)
+    l = min(len(ent), 500000)
     print(l)
     wf = ent[0 : int(l * 1.2)]['Waveform']
     dt = np.zeros((l, TEST_LEN))
@@ -45,10 +45,10 @@ def find_mode():
             print(int((i+1) / (l / 100)), end='% ', flush = True)
             count = 0
     f.close()
-    print('At last, i = ' + str(i) + ' and count = ' + str(num))
+    print('At last, i = ' + str(i) + ' and num = ' + str(num))
     
     plt.clf()
-    plt.hist(dt.flatten(), 20, density=1, histtype='bar', cumulative=True)
+    plt.hist(dt.flatten(), 15, density=1, histtype='bar', cumulative=True)
     plt.title('randommode, l=' + str(l))
     plt.savefig('randommode.eps')
 

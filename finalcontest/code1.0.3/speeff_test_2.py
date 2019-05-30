@@ -43,7 +43,7 @@ def generate_eff_test(knife, steps, fopt):
     with h5py.File(fipt) as ipt, h5py.File(fopt, "w") as opt:
         ent = ipt['Waveform']
         l = len(ent)
-        l = 70
+        #l = 70
         print(l)
         dt = np.zeros(l*Length_pe, dtype=opd)
         start = 0
