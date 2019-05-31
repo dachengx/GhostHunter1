@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 29 21:53:05 2019
+Created on Thu May 23 19:47:03 2019
 
 @author: xudachengthu
 
-Test the performanca of different parameters -- 2
+Test the performanca of different parameters -- 1
 """
 
 import numpy as np
@@ -14,26 +14,27 @@ import h5py
 import time
 import standard
 import matplotlib.pyplot as plt
-'''
+
 fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
 fopt_prefix = "/Users/xudachengthu/Downloads/GHdataset/playground/"
 
 '''
 fipt = "/home/xudacheng/Downloads/GHdataset/playground/playground-data.h5"
 fopt_prefix = "/home/xudacheng/Downloads/GHdataset/playground/"
-
+'''
 LEARNING_RATE = 0.005
 #STEPS = 5000
-STEPS = [10000]
+#STEPS = [3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000]
+STEPS = [10000, 11000, 12000, 13000, 15000, 20000]
 Length_pe = 200
 THRES = 968
 BATCH_SIZE = 100
 #GRAIN = 0.05
+#GRAIN = [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
 
-KNIFE = [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
-#KNIFE = [0.01]
+GRAIN = [0.1, 0.2, 0.3, 0.5]
 
-def generate_eff_test(knife, steps, fopt):
+def generate_eff_test(grain, steps, fopt):
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     model = generate_model(standard.single_pe_path)
     
@@ -51,7 +52,7 @@ def generate_eff_test(knife, steps, fopt):
         end = 0
         #ount = 0
         
-        with tf.device('/device:GPU:0'):
+        with tf.Graph().as_default():
             y_ = tf.placeholder(tf.float32, shape=(BATCH_SIZE, Length_pe + 50))
             LO = tf.placeholder(tf.float32, shape=(Length_pe, Length_pe + 50))
             w = tf.Variable(tf.random_uniform([BATCH_SIZE, Length_pe], minval=0.0, maxval=1.0))
@@ -92,7 +93,7 @@ def generate_eff_test(knife, steps, fopt):
                     wf_test = wf[j, :][tr]
                     wf_input[j, :] = np.subtract(np.mean(wf[j, 900:1000]), wf_test).reshape(1, Length_pe + 50)
                     
-                with tf.Session(config = tf.ConfigProto(log_device_placement = True)) as sess:
+                with tf.Session() as sess:
                     init_op = tf.global_variables_initializer()
                     sess.run(init_op)
                     
@@ -101,15 +102,10 @@ def generate_eff_test(knife, steps, fopt):
                         '''
                         if k % 100 == 0:
                             print("After %d training step(s), loss on training batch is %g." % (k, loss_value))
-                    '''  
+                '''
                 print("After %d training steps, loss on training batch is %g." % (steps, loss_value))
                 for j in range(size_out):
-                    '''
                     pf = np.multiply(np.around(np.divide(wsq_val[j, :], grain)), grain)
-                    '''
-                    pf = wsq_val[j, :]
-                    pf = pf[pf > knife]
-                    
                     '''
                     plt.clf()
                     plt.plot(np.matmul(pf, loperator))
@@ -154,13 +150,13 @@ def generate_model(spe_path):
     return stdmodel
 
 def main():
-    for i in range(len(KNIFE)):
+    for i in range(len(GRAIN)):
         for j in range(len(STEPS)):
-            fopt = fopt_prefix + 'k' + str(i) + '-' + str(j) + '.h5'
+            fopt = fopt_prefix + str(i) + '-' + str(j) + '.h5'
             start_t = time.time()
-            generate_eff_test(KNIFE[i], STEPS[j], fopt)
+            generate_eff_test(GRAIN[i], STEPS[j], fopt)
             end_t = time.time()
-            print('Time for ' + str(KNIFE[i]) + ' ' + str(STEPS[j]) + ' is ' + str(end_t - start_t))
+            print('Time for ' + str(GRAIN[i]) + ' ' + str(STEPS[j]) + ' is ' + str(end_t - start_t))
 
 if __name__ == '__main__':
     main()
