@@ -14,14 +14,14 @@ import h5py
 import time
 import standard
 import matplotlib.pyplot as plt
-
+'''
 fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
 fopt_prefix = "/Users/xudachengthu/Downloads/GHdataset/playground/"
 
 '''
 fipt = "/home/xudacheng/Downloads/GHdataset/playground/playground-data.h5"
 fopt_prefix = "/home/xudacheng/Downloads/GHdataset/playground/"
-'''
+
 LEARNING_RATE = 0.005
 #STEPS = 5000
 STEPS = [10000]
@@ -31,6 +31,7 @@ BATCH_SIZE = 100
 #GRAIN = 0.05
 
 KNIFE = [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
+#KNIFE = [0.01]
 
 def generate_eff_test(knife, steps, fopt):
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
@@ -91,7 +92,7 @@ def generate_eff_test(knife, steps, fopt):
                     wf_test = wf[j, :][tr]
                     wf_input[j, :] = np.subtract(np.mean(wf[j, 900:1000]), wf_test).reshape(1, Length_pe + 50)
                     
-                with tf.Session() as sess:
+                with tf.Session(config = tf.ConfigProto.(log_device_placement = True)) as sess:
                     init_op = tf.global_variables_initializer()
                     sess.run(init_op)
                     
@@ -100,13 +101,14 @@ def generate_eff_test(knife, steps, fopt):
                         '''
                         if k % 100 == 0:
                             print("After %d training step(s), loss on training batch is %g." % (k, loss_value))
-                '''
+                    '''  
+                print("After %d training steps, loss on training batch is %g." % (steps, loss_value))
                 for j in range(size_out):
                     '''
                     pf = np.multiply(np.around(np.divide(wsq_val[j, :], grain)), grain)
                     '''
                     pf = wsq_val[j, :]
-                    pf = pf[np.where(pf > knife)]
+                    pf = pf[pf > knife]
                     
                     '''
                     plt.clf()

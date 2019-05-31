@@ -16,13 +16,13 @@ import pandas as pd
 import h5py
 #import os
 import time
-
+'''
 h5_path = '/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/ztraining-0.h5'
 single_pe_path = '/Users/xudachengthu/Downloads/GHdataset/sketchystore/single_pe.h5'
 '''
 h5_path = '/home/xudacheng/Downloads/GHdataset/finalcontest_data/ztraining-0.h5'
 single_pe_path = '/home/xudacheng/Downloads/GHdataset/sketchystore/single_pe.h5'
-'''
+
 def generate_standard():
     opd_pe = [('EventID', 'u1'), ('ChannelID', 'u1'), ('Waveform', 'f', 1029), ('speWf', 'f', 120)]
     
