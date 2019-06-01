@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 29 21:53:05 2019
+Created on Thu May 23 19:47:03 2019
 
 @author: xudachengthu
 
-Test the performanca of different parameters -- 2
+Using "single PE' method the generate the answer
 """
 
 import numpy as np
@@ -15,25 +15,33 @@ import time
 import standard
 import matplotlib.pyplot as plt
 
-fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
-fopt_prefix = "/Users/xudachengthu/Downloads/GHdataset/playground/"
+fipt = "/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/ztraining-0.h5"
+fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
 
+
+fipt = "/Users/xudachengthu/Downloads/GHdataset/finalcontest_data/zincm-problem.h5"
+fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
 '''
+fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
+fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-spe.h5"
+'''
+'''
+fipt = "/home/xudacheng/Downloads/GHdataset/finalcontest_data/zincm-problem.h5"
+fopt = "/home/xudacheng/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
+
 fipt = "/home/xudacheng/Downloads/GHdataset/playground/playground-data.h5"
-fopt_prefix = "/home/xudacheng/Downloads/GHdataset/playground/"
+fopt = "/home/xudacheng/Downloads/GHdataset/playground/first-submission-spe.h5"
 '''
 LEARNING_RATE = 0.005
-#STEPS = 5000
-STEPS = [10000]
+STEPS = 10000
 Length_pe = 200
 THRES = 968
+#NORMAL_P = 30
 BATCH_SIZE = 100
-#GRAIN = 0.05
 
-KNIFE = [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1]
-#KNIFE = [0.01]
+KNIFE = 0.05
 
-def generate_eff_test(knife, steps, fopt):
+def generate_eff():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
     model = generate_model(standard.single_pe_path)
     
@@ -41,7 +49,7 @@ def generate_eff_test(knife, steps, fopt):
     
     loperator = np.concatenate([mtray[Length_pe - i : 2 * Length_pe + 50 - i] for i in range(Length_pe)]).reshape(Length_pe, Length_pe + 50)
     #invl = np.linalg.inv(loperator)
-    with h5py.File(fipt) as ipt, h5py.File(fopt, "w") as opt:
+    with h5py.File(fipt, 'r') as ipt, h5py.File(fopt, "w") as opt:
         ent = ipt['Waveform']
         l = len(ent)
         #l = 70
@@ -96,19 +104,20 @@ def generate_eff_test(knife, steps, fopt):
                     init_op = tf.global_variables_initializer()
                     sess.run(init_op)
                     
-                    for k in range(steps):
+                    for k in range(STEPS):
                         _, loss_value, w_val, wsq_val, L = sess.run([train_step, loss, w, wsq, LO], feed_dict = {LO : loperator, y_ : wf_input})
-                        
+                        '''
                         if k % 100 == 0:
                             print("After %d training step(s), loss on training batch is %g." % (k, loss_value))
-                    
-                print("After %d training steps, loss on training batch is %g." % (steps, loss_value))
+                    '''
+                print("After %d training steps, loss on training batch is %g." % (STEPS, loss_value))
+                
                 for j in range(size_out):
                     '''
                     pf = np.multiply(np.around(np.divide(wsq_val[j, :], grain)), grain)
                     '''
                     pf = wsq_val[j, :]
-                    pf = np.where(pf > knife, pf, 0)
+                    pf = np.where(pf > KNIFE, pf, 0)
                     
                     '''
                     plt.clf()
@@ -154,13 +163,10 @@ def generate_model(spe_path):
     return stdmodel
 
 def main():
-    for i in range(len(KNIFE)):
-        for j in range(len(STEPS)):
-            fopt = fopt_prefix + 'k' + str(i) + '-' + str(j) + '.h5'
-            start_t = time.time()
-            generate_eff_test(KNIFE[i], STEPS[j], fopt)
-            end_t = time.time()
-            print('Time for ' + str(KNIFE[i]) + ' ' + str(STEPS[j]) + ' is ' + str(end_t - start_t))
+    start_t = time.time()
+    generate_eff()
+    end_t = time.time()
+    print(end_t - start_t)
 
 if __name__ == '__main__':
     main()
