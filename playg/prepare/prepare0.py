@@ -17,7 +17,7 @@ f = h5py.File(filename)
 wfl = f['Waveform']
 print(len(wfl))
 
-ent = wfl[0]
+ent = wfl[291379]
 f.close()
 w = ent['Waveform']
 print(len(w))
@@ -43,7 +43,7 @@ plt.plot(tr, w[tr])
 plt.title('Waveform Zoomed')
 plt.xlabel('ns')
 plt.ylabel('mV')
-'''
+
 import pandas as pd
 eid = ent['EventID']
 ch = ent['ChannelID']
@@ -56,6 +56,6 @@ print(pt)
 
 plt.vlines(pt, ymin=930, ymax=970)
 plt.title("Waveform with Labels")
-'''
+
 plt.show()
 print()

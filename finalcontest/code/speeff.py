@@ -39,7 +39,7 @@ THRES = 968
 #NORMAL_P = 30
 BATCH_SIZE = 100
 
-KNIFE = 0.05
+KNIFE = 0.03
 
 def generate_eff():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
