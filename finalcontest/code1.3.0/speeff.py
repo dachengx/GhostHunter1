@@ -25,10 +25,10 @@ fopt = "/Users/xudachengthu/Downloads/GHdataset/submission/first-submission-spe-
 fipt = "/Users/xudachengthu/Downloads/GHdataset/playground/playground-data.h5"
 fopt = "/Users/xudachengthu/Downloads/GHdataset/playground/first-submission-spe.h5"
 
-'''
+
 fipt = "/home/xudacheng/Downloads/GHdataset/finalcontest_data/zincm-problem.h5"
 fopt = "/home/xudacheng/Downloads/GHdataset/submission/first-submission-spe-fin.h5"
-
+'''
 fipt = "/home/xudacheng/Downloads/GHdataset/playground/playground-data.h5"
 fopt = "/home/xudacheng/Downloads/GHdataset/playground/first-submission-spe.h5"
 '''
@@ -42,9 +42,14 @@ BATCH_SIZE = 100
 
 KNIFE = 0.05
 
-AXE = 3
+AXE = 4
+AXE_SWITCH = 1
 
-EXP = 6
+EXP = 2
+
+FILTER = 0
+
+SHOWS = 0
 
 def generate_eff_ft():
     opd = [('EventID', '<i8'), ('ChannelID', '<i2'), ('PETime', 'f4'), ('Weight', 'f4')]
@@ -54,7 +59,7 @@ def generate_eff_ft():
     plt.plot(model[0 : 50])
     plt.show()
     
-    #model = np.where(model > AXE, model - AXE, 0)
+    model = np.where(model > AXE, model - AXE, 0)
     
     model_raw = np.concatenate([model, np.zeros(Length_pe - len(model))])
     
@@ -97,11 +102,15 @@ def generate_eff_ft():
             fringe = np.zeros(100)
             wf_input = np.subtract(np.mean(wf_input[900:1000]), wf_input)
             wf_input = np.where(wf_input > 0, wf_input, 0)
+            
             wf_input = np.where(wf_input > AXE, wf_input - AXE, 0)
             
             wf_input = np.concatenate([fringe, wf_input, fringe])
             
             wf_k = fft(wf_input)
+            
+            wf_k[0 : FILTER] = 0
+            wf_k[len(wf_k) - FILTER : len(wf_k)] = 0
             
             #k_r = wf_k.real
             #k_r = np.where(np.abs(k_r) > 0.1, k_r, 0)
@@ -111,28 +120,43 @@ def generate_eff_ft():
             pf = pf.real
             #pf = np.divide(pf, Length_pe)
             pf = pf[100 : Length_pe + 100]
-            '''
-            plt.clf()
-            #plt.plot(wf_k.real[100 : Length_pe + 100])
-            #plt.plot(wf_k.real)
-            #plt.plot(model_k.real[100 : Length_pe + 100])
-            plt.plot(pf)
-            plt.show()
             
-            a = np.matmul(pf, loperator)
-            #a = np.matmul(pf, loperator)
-            plt.clf()
-            #plt.plot(a[250 : 400])
-            plt.plot(a)
-            plt.show()
+            if SHOWS:
+                plt.clf()
+                plt.title("wf_input")
+                plt.plot(wf_input)
+                plt.show()
+                
+                plt.clf()
+                plt.title("ifft(wf_k)")
+                plt.plot(ifft(wf_k))
+                plt.show()
+                
+                plt.clf()
+                #plt.plot(wf_k.real[100 : Length_pe + 100])
+                #plt.plot(wf_k.real)
+                #plt.plot(model_k.real[100 : Length_pe + 100])
+                plt.title("pf")
+                plt.plot(pf)
+                plt.show()
+                
+                a = np.matmul(pf, loperator)
+                #a = np.matmul(pf, loperator)
+                plt.clf()
+                #plt.plot(a[250 : 400])
+                plt.title("np.matmul(pf, loperator)")
+                plt.plot(a)
+                plt.show()
+                
+                a = np.matmul(np.where(pf > 0, pf, 0), loperator)
+                #a = np.matmul(pf, loperator)
+                plt.clf()
+                #plt.plot(a[250 : 400])
+                plt.title("np.matmul(np.where(pf > 0, pf, 0), loperator)")
+                plt.plot(a)
+                plt.show()
+                
             
-            a = np.matmul(np.where(pf > 0, pf, 0), loperator)
-            #a = np.matmul(pf, loperator)
-            plt.clf()
-            #plt.plot(a[250 : 400])
-            plt.plot(a)
-            plt.show()
-            '''
             pf = np.where(pf > KNIFE, pf, 0)
             
             lenpf = np.size(np.where(pf > 0))
