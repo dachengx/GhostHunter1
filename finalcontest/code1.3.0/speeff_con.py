@@ -39,7 +39,7 @@ KNIFE = 0.01
 
 AXE = 4
 
-EXP = 2
+EXP = 4
 
 FILTER = 0
 
@@ -58,11 +58,10 @@ def generate_eff_ft():
     model_raw = np.concatenate([model, np.zeros(Length_pe - len(model))])
     
     core = model / np.max(model)
-    model_plate = np.ones_like(model)
-    for i in range(EXP):
-        model_plate = model_plate * core
-    model = model_plate * np.max(model)
-    #model = np.where(model > 0.02, model, 0)
+    for i in range(len(core)):
+        core[i] = pow(core[i], EXP)
+    model = core * np.max(model)
+    model = np.where(model > 0.02, model, 0)
     
     plt.clf()
     plt.plot(model[0 : 50])
