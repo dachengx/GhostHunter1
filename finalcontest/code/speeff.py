@@ -57,7 +57,7 @@ def generate_eff():
         dt = np.zeros(l*Length_pe, dtype=opd)
         start = 0
         end = 0
-        #ount = 0
+        #count = 0
         
         with tf.Graph().as_default():
             y_ = tf.placeholder(tf.float32, shape=(BATCH_SIZE, Length_pe + 50))

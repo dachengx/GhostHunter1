@@ -16,4 +16,4 @@ PARAMETERS:
 * Not using 'Find peak' method
 
 #### This is the third edit
-* Using batch method tho traing the parameters
+* Using batch method to traing the parameters
