@@ -19,7 +19,7 @@ fopt = "first-submission-thres.h5"
 opd = [('EventID', '<i8'), ('ChannelID', '<i2'),
        ('PETime', 'f4'), ('Weight', 'f4')]
 
-'''def mmp(wr):
+def mmp(wr):
     w01i = np.array(wr['Waveform']<962, dtype=np.int8)
     d01i = np.diff(w01i)
     pf = np.where(d01i>=1)[0]
