@@ -19,31 +19,31 @@ def generate_standard(h5_path, single_pe_path):
     
     ztrfile = h5py.File(h5_path) # read h5 file
     
-    ent = ztrfile['Waveform'] # read waveform only
+    wf = ztrfile['Waveform'] # read waveform only
     answ = pd.read_hdf(h5_path, "GroundTruth") # read h5 file answer
-    l = min(len(ent), 1000) # limit l to below 5, l is the amount of event
-    ent = ent[0 : l]
+    l = min(len(wf), 1000) # limit l to below 5, l is the amount of event
+    wf = wf[0 : l]
     answ = answ[0 : 20*l] # assume 1 waveform has less than 20 answers
     dt = np.zeros(int(l/10), dtype = npdt) # assume 10 Events has less than 1 single pe event among them
     count = 0
     num = 0
     
     for i in range(l):
-        eid = ent[i]['EventID']
-        ch = ent[i]['ChannelID'] # in some Event, the amount of Channel < 30
+        eid = wf[i]['EventID']
+        ch = wf[i]['ChannelID'] # in some Event, the amount of Channel < 30
         pe = answ.query("EventID=={} & ChannelID=={}".format(eid, ch))
-        pev = pe['PETime'].values # fetch corresponding PETime to the specific EventID & ChannelID
-        unipe, c = np.unique(pev, return_counts=True)
+        pet = pe['PETime'].values # fetch corresponding PETime to the specific EventID & ChannelID
+        unipe, c = np.unique(pet, return_counts=True)
         
         if np.size(unipe) == 1 and c[0] == 1: # if single pe
             if unipe[0] < 21 or unipe[0] > 930:
-                print('opps! ' + eid) # print Event when the single pe is too early or too late
+                print('opps! ' + str(eid)) # print Event when the single pe is too early or too late
             else:
-                wf = ent[i]['Waveform'] # temporarily record waveform
-                dt['speWf'][num] = wf[unipe[0] - 1 - 20 : unipe[0] - 1 + 100] # only record 120 position, and the time of spe is the 21th
+                spe_wf = wf[i]['Waveform'] # temporarily record waveform
+                dt['speWf'][num] = spe_wf[unipe[0] - 1 - 20 : unipe[0] - 1 + 100] # only record 120 position, and the time of spe is the 21th
                 dt['EventID'][num] = eid
                 dt['ChannelID'][num] = ch
-                dt['Waveform'][num] = wf
+                dt['Waveform'][num] = spe_wf
                 # The 21th position is the spe incoming time
                 num = num + 1 # preparing for next record
             
@@ -52,7 +52,37 @@ def generate_standard(h5_path, single_pe_path):
             print(int((i+1) / (l / 100)), end='% ', flush = True)
             count = 0 # show the progress
     
+    dt = dt[np.where(dt['EventID'] > 0)] # cut empty dt part
+    print(num) # show the amount of spe in l events
     
+    plt.rcParams['figure.figsize'] = (10, 6)
+    plt.rcParams['savefig.dpi'] = 300
+    plt.rcParams['figure.dpi'] = 300
+    plt.rcParams['font.size'] = 16 # set figure parameters
+    
+    spemean = np.mean(dt['speWf'], axis = 0) # calculate average fluctuation of waveform
+    plt.figure()
+    plt.xlim(0,120)
+    plt.ylim(930, 980)
+    tr = list(range(120))
+    plt.plot(tr, spemean) # draw the average fluctuation
+    plt.vlines([20], ymin=945, ymax=975)
+    plt.xlabel('ns')
+    plt.ylabel('mV')
+    plt.title("Standard response model")
+    plt.savefig('spemean.png')
+    plt.close()
+    
+    spemin = np.min(dt['speWf'], axis = 1)
+    u = np.unique(pet)
+    plt.figure()
+    plt.hist(spemin, len(u), density=1, histtype='bar', cumulative=False) # show the dispersion of minimum of spe waveform
+    plt.xlabel('mV')
+    plt.savefig('specumu.png')
+    plt.close()
+    
+    spp = h5py.File(single_pe_path, "w")
+    spp.create_dataset('Sketchy', data=dt, compression='gzip') # save the spe events
 
 def main():
     start_t = time.time()
