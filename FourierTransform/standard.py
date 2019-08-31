@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 import h5py
 import time
 
+h5_path = '/home/xudacheng/Downloads/GHdataset/finalcontest_data/ztraining-0.h5'
+single_pe_path = '/home/xudacheng/Downloads/GHdataset/sketchystore/single_pe.h5'
+
 def generate_standard(h5_path, single_pe_path):
     npdt = np.dtype([('EventID', np.uint32), ('ChannelID', np.uint8), ('Waveform', np.uint16, 1029), ('speWf', np.uint16, 120)]) # set datatype
     
@@ -21,11 +24,10 @@ def generate_standard(h5_path, single_pe_path):
     
     wf = ztrfile['Waveform'] # read waveform only
     answ = pd.read_hdf(h5_path, "GroundTruth") # read h5 file answer
-    l = min(len(wf), 1000) # limit l to below 5, l is the amount of event
+    l = min(len(wf), 10000) # limit l to below 5, l is the amount of event
     wf = wf[0 : l]
     answ = answ[0 : 20*l] # assume 1 waveform has less than 20 answers
     dt = np.zeros(int(l/10), dtype = npdt) # assume 10 Events has less than 1 single pe event among them
-    count = 0
     num = 0
     
     for i in range(l):
@@ -47,14 +49,12 @@ def generate_standard(h5_path, single_pe_path):
                 # The 21th position is the spe incoming time
                 num = num + 1 # preparing for next record
             
-        count = count + 1
-        if count == int(l / 100) + 1:
-            print(int((i+1) / (l / 100)), end='% ', flush = True)
-            count = 0 # show the progress
+        print("\rProcess:|{}>{}|{:6.2f}%".format(int((20*i)/l)*'-', (19 - int((20*i)/l))*' ', 100 * ((i+1) / l)), end='') # show process bar
+    print('\n')
     
     dt = dt[np.where(dt['EventID'] > 0)] # cut empty dt part
-    print(num) # show the amount of spe in l events
-    
+    print('There are {} spe in {} waveforms'.format(num, l)) # show the amount of spe in l events
+    '''
     plt.rcParams['figure.figsize'] = (10, 6)
     plt.rcParams['savefig.dpi'] = 300
     plt.rcParams['figure.dpi'] = 300
@@ -80,17 +80,15 @@ def generate_standard(h5_path, single_pe_path):
     plt.xlabel('mV')
     plt.savefig('specumu.png')
     plt.close()
-    
+    '''
     spp = h5py.File(single_pe_path, "w")
     spp.create_dataset('Sketchy', data=dt, compression='gzip') # save the spe events
 
 def main():
     start_t = time.time()
-    h5_path = '/home/xudacheng/Downloads/GHdataset/finalcontest_data/ztraining-0.h5'
-    single_pe_path = '/home/xudacheng/Downloads/GHdataset/sketchystore/single_pe.h5'
     generate_standard(h5_path, single_pe_path) # generate response model
     end_t = time.time()
-    print(end_t - start_t)
+    print('The total time is {}'.format(end_t - start_t))
 
 if __name__ == '__main__':
     main()
