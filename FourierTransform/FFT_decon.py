@@ -67,6 +67,7 @@ def generate_eff_ft():
             dt['Weight'][start:end] = pwe
             dt['EventID'][start:end] = ent[i]['EventID']
             dt['ChannelID'][start:end] = ent[i]['ChannelID'] # integrated saving related information
+            start = end
             
             print("\rProcess:|{}>{}|{:6.2f}%".format(int((20*i)/l)*'-', (19 - int((20*i)/l))*' ', 100 * ((i+1) / l)), end='') # show process bar
         print('\n')
@@ -78,10 +79,10 @@ def generate_model(spe_path):
     speFile = h5py.File(spe_path, 'r')
     spemean = np.mean(speFile['Sketchy']['speWf'], axis = 0)
     base_vol = np.mean(spemean[70:120])
-    stdmodel = base_vol - spemean[20:120] # stdmodel[0] is the single pe's incoming time
+    stdmodel = base_vol - spemean[20:120] # stdmodel[0] is the single pe's incoming time & baseline inverse
     #stdmodel = np.around(stdmodel / 0.05) * 0.05 # smooth the stdmodel
     stdmodel = np.where(stdmodel > 0.02, stdmodel, 0) # cut off all small values
-    stdmodel = np.abs(np.where(stdmodel >= 0, stdmodel, 0)) # cut off all negative values
+    stdmodel = np.where(stdmodel >= 0, stdmodel, 0) # cut off all negative values
     speFile.close()
     return stdmodel
 
