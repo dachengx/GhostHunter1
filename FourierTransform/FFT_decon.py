@@ -10,7 +10,9 @@ using fft & ifft method and standard response model to deconvolution the wavefor
 
 Length_pe = 1029
 
-KNIFE = 0.01
+KNIFE = 0.05
+
+AXE = 4
 
 EXP = 4
 
@@ -27,6 +29,8 @@ fopt = "/home/xudacheng/Downloads/GHdataset/playground/first-submission-spe.h5"
 def generate_eff_ft():
     opdt = np.dtype([('EventID', np.uint32), ('ChannelID', np.uint8), ('PETime', np.uint16), ('Weight', np.float16)])
     model = generate_model(standard.single_pe_path) # extract the model
+    
+    model = np.where(model > AXE, model - AXE, 0) # cut off unnecessary part to reduce statistical fluctuation
     
     core = model / np.max(model)
     for i in range(len(core)):
@@ -49,6 +53,7 @@ def generate_eff_ft():
             wf_input = ent[i]['Waveform']
             wf_input = np.mean(wf_input[900:1000]) - wf_input # baseline reverse
             wf_input = np.where(wf_input > 0, wf_input, 0) # cut off all negative values
+            wf_input = np.where(wf_input > AXE, wf_input - AXE, 0) # corresponding AXE cut
             wf_k = fft(wf_input) # fft for waveform input
             spec = np.divide(wf_k, model_k) # divide for deconvolution
             pf = ifft(spec)
@@ -62,6 +67,7 @@ def generate_eff_ft():
             lenpf = np.size(np.where(pf > 0))
             pet = np.where(pf > 0)[0] # count the pe time
             pwe = pf[pf > 0] # calculate the pe weight
+            pwe = pwe.astype(np.float16)
             end = start + lenpf
             dt['PETime'][start:end] = pet
             dt['Weight'][start:end] = pwe
